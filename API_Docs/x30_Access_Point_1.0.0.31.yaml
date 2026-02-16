@@ -1,0 +1,5815 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0.31
+  title: "SnapOne AN-x30 RESTful API"
+  description: The document declares RESTful APIs used in SnapOne AN-x30 product
+servers:
+  - url: 'https://192.168.20.253:4431/api'
+  - url: 'http://192.168.20.253:8001/api'
+  - url: 'https://127.0.0.1:4431/api'
+  - url: 'http://127.0.0.1:8001/api'
+tags:
+  - name: Sys
+    description: Supported by EMPLUS
+  - name: Tools
+    description: Supported by EMPLUS
+  - name: Ethernet
+    description: Supported by EMPLUS
+  - name: Wireless
+    description: Supported by EMPLUS
+paths:
+  /v1/sys/login:
+    post: # API is synchronous
+      tags:
+        - Sys
+      summary: "Login to API server"
+      description: Login to API server
+      operationId: anaLogin
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login
+              properties:
+                login:
+                  $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  login:
+                    $ref: '#/components/schemas/Login_Token'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/sys/status-update:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Status update, include system, LAN and WiFi"
+      description: Status update, include system, LAN and WiFi
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+            DFS date : YYYY/MM/DD, DFS time is UTC format'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  system:
+                    $ref: '#/components/schemas/System'
+                  ethernet:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/Lan'
+                  radio:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/Radio'
+                  dfs:
+                    $ref: '#/components/schemas/dfs'
+                  counter:
+                    $ref: '#/components/schemas/counter'
+                  wifiBridge:
+                    $ref: '#/components/schemas/wifiBridge'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/sys/apply:
+    post: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Request apply configuration"
+      description: Request apply configuration
+      operationId: anaApply
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceMAC'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithTime'
+  /v1/sys/reboot:
+    post: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Request device reboot"
+      description: Request device reboot
+      operationId: anaReboot
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceMAC'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithTime'
+  /v1/sys/reset-password:
+    post: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Request device reset password"
+      description: Request device reset password
+      operationId: anaResetPassword
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceMAC'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/reset-factory:
+    post: # API Trigger REBOOT # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Request device factory reset default"
+      description: Request device factory reset default
+      operationId: anaResetFactory
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceMAC'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithTime'
+  /v1/sys/revert:
+    post: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Request revert configuration"
+      description: Request revert configuration
+      operationId: anaRevertPendingChanges
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceMAC'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/status:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Return system status"
+      description: Return system status
+      operationId: anaGetStatus
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sysInfo:
+                    $ref: '#/components/schemas/SystemInfo'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v2/sys/status:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Return system status"
+      description: Return system status
+      operationId: anaGetStatusV2
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sysInfo:
+                    $ref: '#/components/schemas/SystemInfoV2'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/sys/config:
+    post: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Set system configuration"
+      description: Set system configuration
+      operationId: anaSetSystemConfig
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - config
+              properties:
+                config:
+                  $ref: '#/components/schemas/SystemCfg'
+              example:
+                config:
+                  opMode: AP
+                  opRole: "--"
+                  system_name: AN-520-AP-I
+                  country_code: 840
+                  led_enable: true
+                  resetPassword_enable: false
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Return system config"
+      description: Return system config
+      operationId: anaGetSystemConfig
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  config:
+                    $ref: '#/components/schemas/SystemCfg'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+                  config:
+                    opMode: AP
+                    opRole: CONTROLLER
+                    system_name: AN-520-AP-I
+                    country_code: 840
+                    led_enable: false
+                    resetPassword_enable: false
+  /v1/sys/device-info:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Return device MP information"
+      description: Return device Mass Production information
+      operationId: getSysMPInfo
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sysMpInfo:
+                    $ref: '#/components/schemas/DeviceInfo'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/sys/snmp:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Return device SNMP configuration"
+      description: Return device SNMP configuration
+      operationId: getSysSNMPConfig
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  snmpConfs:
+                    $ref: '#/components/schemas/SNMPConfig'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/sys/snmpv2:
+    post:  # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Set device SNMPv2 configuration"
+      description: Set device SNMPv2 configuration
+      operationId: setSysSNMPv2Config
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - snmpv2
+              properties:
+                snmpv2:
+                  $ref: '#/components/schemas/SNMPv2Config'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/snmpv3:
+    post:  # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Set device SNMPv3 configuration"
+      description: Set device SNMPv3 configuration
+      operationId: setSysSNMPv3Config
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - snmpv3
+              properties:
+                snmpv3:
+                  $ref: '#/components/schemas/SNMPv3Config'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/stp:
+    get:  # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Return device Spanning Tree Protocol(STP) configuration"
+      description: Return device Spanning Tree Protocol(STP) configuration
+      operationId: getSysSTPConfig
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stp:
+                    $ref: '#/components/schemas/STPConfig'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    post:  # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Set device Spanning Tree Protocol (STP) configuration"
+      description: Set device Spanning Tree Protocol (STP) configuration
+      operationId: setSysSTPConfig
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - stp
+              properties:
+                stp:
+                  $ref: '#/components/schemas/STPConfig'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/services:
+    get:  # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Return device service configuration"
+      description: Return device service configuration
+      operationId: getSysServiceConfig
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sysServiceConfs:
+                    $ref: '#/components/schemas/ServiceConfig'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    post:  # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Set device service configuration"
+      description: Set device service configuration
+      operationId: setSysServiceConfig
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - services
+              properties:
+                sysServiceConfs:
+                  $ref: '#/components/schemas/ServiceConfig'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/users:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: Get users
+      description: Get users
+      operationId: getUsers
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  usersInfo:
+                    $ref: '#/components/schemas/ShowUserArray'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  usersInfo:
+                    - name: araknis
+                      privilege: admin
+                    - name: iamguest
+                      privilege: guest
+                    - name: test
+                      privilege: guest
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+    post: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: Create users
+      description: Create users
+      operationId: createUsers
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - usersInfo
+              properties:
+                usersInfo:
+                  $ref: '#/components/schemas/UserArray'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/tools/auto-reboot:
+    get:  # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Tools
+      summary: "Get auto reboot config."
+      description: Get auto reboot config
+      operationId: getAutoRebootConfig
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  autoRebootConfs:
+                    $ref: '#/components/schemas/autoRebootConfig'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    post:  # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Tools
+      summary: "update auto reboot config."
+      description: Update auto reboot config.
+      operationId: modifyAutoRebootConfig
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - auto-reboot
+              properties:
+                auto-reboot:
+                  $ref: '#/components/schemas/autoRebootConfig'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/time:
+    get:  # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Return device time information"
+      description: Return device time information
+      operationId: getSysTimeInfo
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sysTimeInfo:
+                    $ref: '#/components/schemas/DeviceTimeConfig'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  sysTimeInfo:
+                    devCurrentTime: 2022-02-15T21:04
+                    syncWithNTP: true
+                    ntpServer: time.windows.com
+                    timezone: UTC-2
+                    name: Europe/Athens
+                    notes: Athens, Istanbul, Kaliningrad, South Africa
+                    manually_DateTime: 2018-03-19T17:04
+                    enableDST: true
+                    DSTStartDate: M4.1.0.2
+                    DSTEndDate: M10.1.0.2
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+    post:  # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Set device time information"
+      description: Set device time information
+      operationId: setSysTimeInfo
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - time
+              properties:
+                time:
+                  $ref: '#/components/schemas/DeviceTimeConfig'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/gw-monitor-config:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Get Gateway Monitor configuration."
+      description: Get Gateway Monitor configuration.
+      operationId: getGWMonitorConfig
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gwMoniConfs:
+                    $ref: '#/components/schemas/GWMonitorConfig'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    post: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Set Gateway Monitor configuration."
+      description: Set Gateway Monitor configuration
+      operationId: setGWMonitorConfig
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - gwMoniConfs
+              properties:
+                gwMoniConfs:
+                  $ref: '#/components/schemas/GWMonitorConfig'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/firmware/check:
+    post: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "check firmware image"
+      description: Check firmware image (/tmp/firmware.img)
+      operationId: anaUpdateFirmware
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - device
+              type: object
+              properties:
+                device:
+                  $ref: '#/components/schemas/FWUpdate'
+            examples:
+              AN-520-AP-I:
+                value:
+                  device:
+                    model: AN520I
+                    hashAlgorithm: MD5
+                    checksum: 3b832f71ca187ce7978f83af431bc3c9
+              AN-820-AP-I:
+                value:
+                  device:
+                    model: AN820I
+                    hashAlgorithm: MD5
+                    checksum: 3b8......
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/firmware/cancel:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Delete uploaded firmware"
+      description: Delete uploaded firmware
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceMAC'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/sys/firmware/upgrade:
+    post: # API Trigger REBOOT # API is asynchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Trigger update firmware"
+      description: Trigger update firmware
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceMAC'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  waittime_seconds:
+                    description: v1 use, not camelcase
+                    type: integer
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  waittime_seconds: 300  #V1
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+  /v2/sys/firmware/upgrade:
+    post: # API Trigger REBOOT # API is asynchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Trigger update firmware"
+      description: Trigger update firmware
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceMAC'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  waitingTime:
+                    description: v2 use, camelcase
+                    type: integer
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  waitingTime: 300  #V2
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+  /v1/sys/changes:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Sys
+      summary: "Get UCI status. Return false if there is no config changes"
+      description: Get UCI status. Return false if there is no config changes
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uci_changes:
+                    type: boolean
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/tools/ping:
+    post:  # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Tools
+      summary: "Trigger ping command"
+      description: Ping IP address
+      operationId: pingIPaddress
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - ping
+              type: object
+              properties:
+                ping:
+                  $ref: '#/components/schemas/PingCfg'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingOK'
+  /v1/tools/ping/result:
+    get:  # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Tools
+      summary: "Get ping result by using GET method"
+      description: Get ping result
+      operationId: getPingResult
+      parameters:
+        - in: query
+          name: done
+          description: If ping complete, please set true, otherwise set false
+          required: true
+          schema:
+            type: boolean
+        - in: query
+          name: session_id
+          description: |
+            which file name you want to get, if done=true, DUT will remove this
+            file name
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pid
+          description: Which pid of ping you want to kill, if done=true.
+          required: true
+          schema:
+            type: integer
+            minimum: 2
+            maximum: 32768  #default maximum, see /proc/sys/kernel/pid_max
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pingRes:
+                    $ref: '#/components/schemas/PingResult'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/tools/traceroute:
+    post:  # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Tools
+      summary: "Trigger traceroute command"
+      description: Traceroute a IP/domain name
+      operationId: tracerouteIPaddress
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - traceroute
+              type: object
+              properties:
+                traceroute:
+                  $ref: '#/components/schemas/TraceRTCfg'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TraceRTOK'
+  /v1/tools/traceroute/result:
+    get:  # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Tools
+      summary: "Get traceroute result"
+      description: |
+        Get traceroute result, based on the traceroute {session_id}, delimiter
+        by special character set "&&"
+      operationId: getTracerouteResult
+      parameters:
+        - in: query
+          name: deviceId
+          description: The Device MAC which frontend want to query
+          required: false
+          schema:
+            $ref: '#/components/schemas/macFormat'
+        - in: query
+          required: true
+          name: done
+          schema:
+            type: boolean
+          description: |
+            If traceroute complete, please set true, otherwise set false.
+            Traceroute will dispaly "Done." when procedure finished.
+        - in: query
+          required: true
+          name: session_id
+          schema:
+            type: string
+          description: |
+            which file name you want to get, if done=true, DUT will remove this
+            file
+        - in: query
+          name: pid
+          description: Which pid of traceroute you want to kill, if done=true.
+          required: true
+          schema:
+            type: integer
+            minimum: 2
+            maximum: 32768  #default maximum, see /proc/sys/kernel/pid_max
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tracerouteRes:
+                    $ref: '#/components/schemas/TracerouteResult'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/tools/sitesurvey:
+    post: # API is synchronous # Timeout 30 sec
+      security:
+        - bearerAuth: []
+      tags:
+        - Tools
+      summary: "execute sitesurvey for radio"
+      description: |
+        Site survey at {radio} and {radio} might be [24g], [5g_1], [6g] or [all]
+      operationId: execSiteSurvey
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - sitesurvey
+              type: object
+              properties:
+                sitesurvey:
+                  $ref: '#/components/schemas/SiteSurveyCfg'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+                  waiting_time:
+                    description: v1 use, not camelcase
+                    type: integer
+                  session_num:
+                    type: integer
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  session_id: 36e8cda2-90fd-4147-b04a-f2504d3a6fdb
+                  waiting_time: 10  #V1
+                  session_num: 1
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+  /v2/tools/sitesurvey:
+    post: # API is synchronous # Timeout 30 sec
+      security:
+        - bearerAuth: []
+      tags:
+        - Tools
+      summary: "execute sitesurvey for radio"
+      description: |
+        Site survey at {radio} and {radio} might be [24g], [5g_1], [6g] or [all]
+      operationId: execSiteSurveyV2
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - sitesurvey
+              type: object
+              properties:
+                sitesurvey:
+                  $ref: '#/components/schemas/SiteSurveyCfg'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+                  waitingTime:
+                    description: v2 use, camelcase
+                    type: integer
+                  session_num:
+                    type: integer
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  session_id: 36e8cda2-90fd-4147-b04a-f2504d3a6fdb
+                  waitingTime: 10  #V2
+                  session_num: 1
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+  /v1/tools/sitesurvey/result:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Tools
+      summary: "Get site survey result"
+      description: Get site survey result, based on the site survey {session_id}
+      operationId: getSiteSurveyResult
+      parameters:
+        - in: query
+          name: deviceId
+          description: The Device MAC which frontend want to query
+          required: false
+          schema:
+            $ref: '#/components/schemas/macFormat'
+        - in: query
+          name: session_id
+          description: Site survey session id
+          required: true
+          schema:
+            type: string
+          example: 36e8cda2-90fd-4147-b04a-f2504d3a6fdb
+        - in: query
+          name: radio
+          description: |
+            which radio of sitesurvey result you want to get, ex:24g, 5g_1, 6g
+            or all
+          required: true
+          schema:
+            type: string
+            enum: [ 24g, 5g_1, 6g, all ]
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+            If encounter "errCode": 16, Please reacquire result data after $interval second.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: object
+                  properties:
+                    siteSurveyResult:
+                      $ref: '#/components/schemas/SiteSurveyResult'
+                    deviceId:
+                      $ref: '#/components/schemas/macFormat'
+                    errCode:
+                      $ref: '#/components/schemas/errCodeEnum'
+                    message:
+                      type: string
+                      enum: [ OK ]
+                - type: object
+                  properties:
+                    deviceId:
+                      $ref: '#/components/schemas/macFormat'
+                    errCode:
+                      $ref: '#/components/schemas/errCodeEnum'
+                    paraMsgs:
+                      type: array
+                      uniqueItems: true
+                      items:
+                        type: object
+                        properties:
+                          object:
+                            type: string
+                          interval:
+                            type: integer
+                          objectValue:
+                            type: string
+              examples:
+                errCode_0:
+                  value:
+                    siteSurveyResult:
+                      24g:
+                        scanResult:
+                          - bssid: "00:0F:FF:3F:5C:20"
+                            ssid: "wireless_init2g"
+                            mode: "AP"
+                            channel: 6
+                            signal: -33
+                            auth_type: "WPA2-PSK"
+                            wireless_mode: "11NG"
+                            ht_mode: "HT20"
+                        summary:
+                          - channel: 1
+                            ssid_count: 5
+                            utilization: 30
+                            max_rssi: -30
+                            isBest: true
+                      5g_1:
+                        scanResult:
+                          - bssid: "00:0F:FF:3F:5C:21"
+                            ssid: "wireless_init5g"
+                            mode: "AP"
+                            channel: 136
+                            signal: -33
+                            auth_type: "WPA2-PSK"
+                            wireless_mode: "11AC"
+                            ht_mode: "HT80"
+                        summary:
+                          - channel: 36
+                            ssid_count: 5
+                            utilization: 40
+                            max_rssi: -30
+                            isBest: true
+                      6g:
+                        scanResult:
+                          - bssid: "00:0F:FF:3F:5C:22"
+                            ssid: "wireless_init6g"
+                            mode: "AP"
+                            channel: 69
+                            signal: -85
+                            auth_type: "WPA3-SAE"
+                            wireless_mode: "11BEA"
+                            ht_mode: "EHT320"
+                        summary:
+                          - channel: 21
+                            ssid_count: 0
+                            utilization: 1
+                            max_rssi: -95
+                            isBest: false
+                    deviceId: "D4:6A:91:55:66:11"
+                    errCode: 0
+                    message: "OK"
+                errCode_16:
+                  value:
+                    deviceId: "D4:6A:91:55:66:11"
+                    errCode: 16
+                    paraMsgs:
+                      - object: "Sitesurvey"
+                        interval: 5
+                        objectValue: "Site survey is still in the process, please get data later"
+  /v1/net/ethernet:
+    post:  # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Ethernet
+      summary: "Set configuration for Ethernet interface"
+      description: Set configuration for Ethernet interface
+      operationId: anaSetNetEthernet
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - etherConfs
+              properties:
+                etherConfs:
+                  $ref: '#/components/schemas/Ethernet'
+              example:
+                etherConfs:
+                  mode: Static
+                  ip: 192.168.78.241
+                  mask: 255.255.255.0
+                  gateway: 192.168.78.9
+                  primary_dns: 8.8.8.8
+                  secondary_dns: 8.8.4.4
+                  mgmt_vlan_tagged: true
+                  mgmt_vlan_id: 3
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Ethernet
+      summary: "Return Ethernet interface configuration"
+      description: Return Ethernet interface configuration
+      operationId: anaGetNetEthernet
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errCode
+                  - etherConfs
+                properties:
+                  etherConfs:
+                    $ref: '#/components/schemas/Ethernet'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/net/ethernet/port:
+    post:  # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Ethernet
+      summary: "Set configuration for each ethernet interface"
+      description: Set configuration for each ethernet interface
+      operationId: anaSetNetEthernetPort
+      requestBody:
+        description: One or more ethernet port config
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - etherPortConfs
+              properties:
+                etherPortConfs:
+                  $ref: '#/components/schemas/EthernetPortConfs'
+              example:
+                etherPortConfs:
+                  'LAN1':
+                    speed: 1Gbps
+                  'LAN2':
+                    speed: 10Mbps
+                    duplexMode: HALF
+                    reset: true
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Ethernet
+      summary: "Get all Ethernet port(PHY) configure status"
+      description: Get all Ethernet port(PHY) configure status, including speed, duplex, reset
+      operationId: anaGetNetEthernetPort
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errCode
+                  - etherPortConfs
+                properties:
+                  etherPortConfs:
+                    $ref: '#/components/schemas/EthernetPortConfs'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+                  etherPortConfs:
+                    'LAN1':
+                      speed: 100Mbps
+                      duplexMode: HALF
+                      reset: false #this field for outdoor model only
+                    'LAN2':
+                      speed: 1Gbps
+                      duplexMode: FULL
+                      reset: false #this field for outdoor model only
+  /v1/net/ethernet/portStatus:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Ethernet
+      summary: "Get all Ethernet port(PHY) current status"
+      description: Get all Ethernet port(PHY) current status, including speed, duplex, tx, rx
+      operationId: anaGetNetEthernetPortStatus
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errCode
+                  - etherPortStatus
+                properties:
+                  etherPortStatus:
+                    $ref: '#/components/schemas/EthernetPortStatuses'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  etherPortStatus:
+                    'LAN1':
+                      speed: 100Mbps
+                      duplexMode: HALF
+                      macAddress: D4:6A:91:55:66:11
+                      rx: 629612
+                      tx: 528765
+                    'LAN2':
+                      speed: 1Gbps
+                      duplexMode: FULL
+                      macAddress: D4:6A:91:55:66:12
+                      rx: 529612
+                      tx: 628765
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+  /v1/wireless/radiostatus:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return Radio status"
+      description: Return Radio status
+      operationId: anaGetRadioStatus
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  radio0:
+                    $ref: '#/components/schemas/RadioStatus'
+                  radio1:
+                    $ref: '#/components/schemas/RadioStatus'
+                  radio2:
+                    $ref: '#/components/schemas/RadioStatus'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  radio0:
+                    interface: '2.4GHZ'
+                    enabled: true
+                    rx: 13578
+                    tx: 32689
+                    networks: 1
+                    clients: 1
+                  radio1:
+                    interface: '5GHZ'
+                    enabled: true
+                    rx: 88375
+                    tx: 166039
+                    networks: 1
+                    clients: 1
+                  radio2:
+                    interface: '6GHZ'
+                    enabled: true
+                    rx: 97965
+                    tx: 188112
+                    networks: 1
+                    clients: 1
+  /v2/wireless/radiostatus:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return Radio status"
+      description: Return Radio status
+      operationId: anaGetRadioStatusV2
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  radio0:
+                    $ref: '#/components/schemas/RadioStatusV2'
+                  radio1:
+                    $ref: '#/components/schemas/RadioStatusV2'
+                  radio2:
+                    $ref: '#/components/schemas/RadioStatusV2'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  radio0:
+                    interface: '2.4GHZ'
+                    enabled: true
+                    rx: 13578
+                    tx: 32689
+                    networks: 1
+                    clients: 1
+                    guestNetwork: true
+                    guestClients: 1
+                  radio1:
+                    interface: '5GHZ'
+                    enabled: true
+                    rx: 88375
+                    tx: 166039
+                    networks: 1
+                    clients: 1
+                    guestNetwork: true
+                    guestClients: 1
+                  radio2:
+                    interface: '6GHZ'
+                    enabled: true
+                    rx: 97965
+                    tx: 188112
+                    networks: 1
+                    clients: 1
+                    guestNetwork: true
+                    guestClients: 1
+  /v1/wireless/networks:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return Network status"
+      description: Return Network status
+      operationId: anaGetNetworkStatus
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Networks:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/WlanStatus'
+                  guestNetworks:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/GuestWlanStatus'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/wireless/network:
+    post: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Add WLAN Network configuration by interface"
+      description: Add WLAN Network configuration by interface, 2.4GHZ, 5GHZ, 6GHZ, BOTH or ALL
+      operationId: anaAddNetworkByinterface
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ssid
+                - enabled
+                - interface
+                - security
+                - broadcastEnabled
+                - fastRoamingEnabled
+              properties:
+                ssid:
+                  type: string
+                  minLength: 1
+                  maxLength: 32
+                enabled:
+                  type: boolean
+                interface:
+                  type: string
+                  enum: [ 2.4GHZ, 5GHZ, 6GHZ, BOTH, BOTH25, BOTH26, BOTH56, ALL ]
+                networkIdx:
+                  description: |
+                    Optional, POST BOTH/ALL with valid & exist networkIdx will extend single profile to both/all profile.
+                  allOf:
+                    - $ref: '#/components/schemas/networkIndexEnum'
+                security:
+                  type: string
+                  enum:
+                    - OPEN
+                    - WPA3
+                    - WPA3-SAE MIXED  #GUI drop-down list display 'WPA2/WPA3-SAE Mixed'
+                    - WPA3-SAE
+                    - WPA2-PSK
+                    #- WPA-PSK MIXED
+                    - WPA2
+                    #- WPA MIXED
+                    - OWE
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128  #SAE maximum password length is 128bytes
+                pmf:  #Protected Management Frames
+                  $ref: '#/components/schemas/pmfEnum'
+                ofdm:
+                  description: Required for 2.4GHz & BOTH interface, and hwmode 11b can't enable ofdm
+                  type: boolean
+                wifi6:
+                  description: WIFI6 can be enable if 2.4G/5G/6G hwmode is "802.11AX"
+                  type: boolean
+                powerSaving:
+                  type: boolean
+                clientIsolation:
+                  type: boolean
+                broadcastEnabled:
+                  type: boolean
+                dtimPeriod:
+                  type: integer
+                  minimum: 1
+                  maximum: 255
+                bcmcthreshold:
+                  type: integer
+                  minimum: 0
+                  maximum: 64
+                fastRoamingEnabled:
+                  type: boolean
+                bandSteeringEnabled:
+                  type: boolean
+                mdnsForwarding:
+                  type: boolean
+                radius:
+                  $ref: '#/components/schemas/Radius'
+                vlan:
+                  $ref: '#/components/schemas/Vlan'
+                traffic_shaping:
+                  $ref: '#/components/schemas/TrafficShaping'
+                mlo:
+                  $ref: '#/components/schemas/MLO'
+              example:
+                enabled: true
+                interface: BOTH
+                ssid: "EMPLUS"
+                security: "WPA2-PSK"
+                password: "12345678"
+                pmf: 1
+                ofdm: true
+                wifi6: true
+                powerSaving: false
+                clientIsolation: true
+                broadcastEnabled: true
+                dtimPeriod: 20
+                bcmcthreshold: 64
+                fastRoamingEnabled: true
+                bandSteeringEnabled: true
+                mdnsForwarding: true
+              oneOf: [
+                {
+                  properties: {
+                    security: { enum: [WPA3, WPA2] }
+                  },
+                  required: [ radius ]
+                },
+                {
+                  properties: {
+                    security: { enum: [WPA3-SAE MIXED, WPA3-SAE, WPA2-PSK] }
+                  },
+                  required: [ password ]
+                },
+                {
+                  properties: {
+                    security: { enum: [OPEN, OWE] }
+                  }
+                },
+                {
+                  properties: {
+                    interface: { enum: [2.4GHZ] }
+                  },
+                  required: [ ofdm ]
+                }
+              ]
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  networkIndex:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/networkIndexEnum'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    patch: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Modify WLAN Network configuration by networkIndex"
+      description: Modify WLAN Network configuration by networkIndex and interface
+      operationId: anaModifyNetworkConfigBynetworkIndex
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - networkIndex
+                - interface
+              properties:
+                networkIndex:
+                  type: array
+                  uniqueItems: true
+                  items:
+                    $ref: '#/components/schemas/networkIndexEnum'
+                ssid:
+                  type: string
+                  minLength: 1
+                  maxLength: 32
+                interface:
+                  type: string
+                  enum: [ 2.4GHZ, 5GHZ, 6GHZ, BOTH, BOTH25, BOTH26, BOTH56, ALL ]
+                enabled:
+                  type: boolean
+                security:
+                  type: string
+                  enum:
+                    - OPEN
+                    - WPA3
+                    - WPA3-SAE MIXED  #GUI drop-down list display 'WPA2/WPA3-SAE Mixed'
+                    - WPA3-SAE
+                    - WPA2-PSK
+                    #- WPA-PSK MIXED
+                    - WPA2
+                    #- WPA MIXED
+                    - OWE
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128  #SAE maximum password length is 128bytes
+                pmf:  #Protected Management Frames
+                  $ref: '#/components/schemas/pmfEnum'
+                ofdm:
+                  description: Only for 2.4G interface, and hwmode 11b can't enable ofdm
+                  type: boolean
+                wifi6:
+                  description: WIFI6 can be enable if 2.4G/5G/6G hwmode is "802.11AX"
+                  type: boolean
+                powerSaving:
+                  type: boolean
+                clientIsolation:
+                  type: boolean
+                broadcastEnabled:
+                  type: boolean
+                dtimPeriod:
+                  type: integer
+                  minimum: 1
+                  maximum: 255
+                bcmcthreshold:
+                  type: integer
+                  minimum: 0
+                  maximum: 64
+                fastRoamingEnabled:
+                  type: boolean
+                bandSteeringEnabled:
+                  type: boolean
+                mdnsForwarding:
+                  type: boolean
+                radius:
+                  $ref: '#/components/schemas/Radius'
+                vlan:
+                  $ref: '#/components/schemas/Vlan'
+                traffic_shaping:
+                  $ref: '#/components/schemas/TrafficShaping'
+                mlo:
+                  $ref: '#/components/schemas/MLO'
+              example:
+                networkIndex: [0,50]
+                security: OPEN
+                ssid: araknis_initial
+                enabled: true
+                interface: BOTH
+                ofdm: false
+                wifi6: true
+                powerSaving: false
+                clientIsolation: true
+                broadcastEnabled: true
+                dtimPeriod: 20
+                bcmcthreshold: 64
+                fastRoamingEnabled: false
+                bandSteeringEnabled: false
+                mdnsForwarding: false
+                vlan:
+                  vlanEnable: true
+                  vlanID: 55
+                traffic_shaping:
+                  enabled: true
+                  download_limit: 55
+                  upload_limit: 66
+                mlo:
+                  mloEnabled: true
+                  mldID: 0
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+    delete: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Delete WLAN Network configuration by networkIndex and interface"
+      description: Delete WLAN Network configuration by networkIndex and interface
+      operationId: anaDelNetworkConfigBynetworkIndex
+      parameters:
+        - in: query
+          name: networkIndex
+          description: The networkIndex which frontend want to delete
+          required: true
+          schema:
+            $ref: '#/components/schemas/networkIndexEnum'
+        - in: query
+          name: interface
+          required: false
+          schema:
+            type: string
+            enum: [ 2.4GHZ, 5GHZ, 6GHZ, BOTH, BOTH25, BOTH26, BOTH56, ALL ]
+          description: The interface which frontend want to delete
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                properties:
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return WLAN Network configuration by networkIndex"
+      description: Return WLAN Network configuration by networkIndex
+      operationId: anaGetNetworkConfigBynetworkIndex
+      parameters:
+        - in: query
+          name: networkIndex
+          description: The networkIndex which frontend want to query
+          required: true
+          schema:
+            $ref: '#/components/schemas/networkIndexEnum'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  interface:
+                    type: string
+                    enum: [ 2.4GHZ, 5GHZ, 6GHZ, BOTH, BOTH25, BOTH26, BOTH56, ALL ]
+                  networkIndex:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/networkIndexEnum'
+                  ssid:
+                    type: string
+                    minLength: 1
+                    maxLength: 32
+                  enabled:
+                    type: boolean
+                  security:
+                    type: string
+                    enum:
+                      - OPEN
+                      - WPA3
+                      - WPA3-SAE MIXED  #GUI drop-down list display 'WPA2/WPA3-SAE Mixed'
+                      - WPA3-SAE
+                      - WPA2-PSK
+                      #- WPA-PSK MIXED
+                      - WPA2
+                      #- WPA MIXED
+                      - OWE
+                  password:
+                    type: string
+                    minLength: 8
+                    maxLength: 128  #SAE maximum password length is 128bytes
+                  pmf:  #Protected Management Frames
+                    $ref: '#/components/schemas/pmfEnum'
+                  ofdm:
+                    description: Only for 2.4G interface, and hwmode 11b can't enable ofdm
+                    type: boolean
+                  wifi6:
+                    description: WIFI6 can be enable if 2.4G/5G/6G hwmode is "802.11AX"
+                    type: boolean
+                  powerSaving:
+                    type: boolean
+                  clientIsolation:
+                    type: boolean
+                  broadcastEnabled:
+                    type: boolean
+                  fastRoamingEnabled:
+                    type: boolean
+                  bandSteeringEnabled:
+                    type: boolean
+                  mdnsForwarding:
+                    type: boolean
+                  dtimPeriod:
+                    type: integer
+                  bcmcthreshold:
+                    type: integer
+                  radius:
+                      $ref: '#/components/schemas/Radius'
+                  vlan:
+                      $ref: '#/components/schemas/Vlan'
+                  traffic_shaping:
+                      $ref: '#/components/schemas/TrafficShaping'
+                  mlo:
+                      $ref: '#/components/schemas/MLO'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/wireless/network/scheduling:
+    post: # API required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Set scheduling configuration of specified WLAN Network by networkIndex"
+      description: Set scheduling configuration of specified WLAN Network by networkIndex
+      operationId: anaSetWifiSchedulingBynetworkIndex
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                networkIndex:
+                  $ref: '#/components/schemas/networkIndexEnum'
+                scheduling:
+                  $ref: '#/components/schemas/Scheduling'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  networkIndex:
+                    $ref: '#/components/schemas/networkIndexEnum'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return scheduling configuration of specified WLAN Network"
+      description: Return scheduling configuration of specified WLAN Network by networkIndex
+      operationId: anaGetWifiSchedulingBynetworkIndex
+      parameters:
+        - in: query
+          name: networkIndex
+          required: true
+          schema:
+            $ref: '#/components/schemas/networkIndexEnum'
+          description: The networkIndex which frontend want to query
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scheduling:
+                    $ref: '#/components/schemas/Scheduling'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v2/wireless/guestnetwork:
+    post: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Add WLAN Guest Network configuration by networkIndex"
+      description: Add WLAN Guest Network configuration by networkIndex
+      operationId: anaAddGuestNetworkConfigBynetworkIndexV2
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ssid
+                - enabled
+                - networkIndex
+                - broadcastEnabled
+                - clientIsolation
+                - security
+                - pmf
+              properties:
+                ssid:
+                  type: string
+                  minLength: 1
+                  maxLength: 32
+                enabled:
+                  type: boolean
+                networkIndex:
+                  $ref: '#/components/schemas/guestNetworkIndexEnum'
+                broadcastEnabled:
+                  type: boolean
+                clientIsolation:
+                  type: boolean
+                security:
+                  $ref: '#/components/schemas/guestNetworkSecurityType'
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128  #SAE maximum password length is 128bytes
+                pmf:  #Protected Management Frames
+                  $ref: '#/components/schemas/pmfEnum'
+                gatewayIp:
+                  $ref: '#/components/schemas/ipFormat'
+                subnetMask:
+                  $ref: '#/components/schemas/ipFormat'
+                startingIp:
+                  $ref: '#/components/schemas/ipFormat'
+                endingIp:
+                  $ref: '#/components/schemas/ipFormat'
+                leaseTime:
+                  type: integer
+                  minimum: 360   #Minutes
+                  maximum: 1440  #Minutes
+              example:
+                ssid: "EMPLUS-guest"
+                enabled: true
+                networkIndex: 39
+                broadcastEnabled: true
+                clientIsolation: true
+                security: "WPA2-PSK"
+                password: "12345678"
+                gatewayIp: "172.30.1.1"
+                subnetMask: "255.255.255.0"
+                startingIp: "172.30.1.100"
+                endingIp: "172.30.1.200"
+                leaseTime: 1440
+              oneOf: [
+                {
+                  properties: {
+                    security: { enum: [WPA3-SAE MIXED, WPA3-SAE, WPA2-PSK] }
+                  },
+                  required: [ password ]
+                },
+                {
+                  properties: {
+                    security: { enum: [OPEN, OWE] }
+                  }
+                }
+              ]
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                properties:
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    patch: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Modify WLAN Guest Network configuration by networkIndex"
+      description: Modify WLAN Guest Network configuration by networkIndex
+      operationId: anaModifyGuestNetworkConfigBynetworkIndexV2
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - networkIndex
+              properties:
+                ssid:
+                  type: string
+                  minLength: 1
+                  maxLength: 32
+                enabled:
+                  type: boolean
+                networkIndex:
+                  $ref: '#/components/schemas/guestNetworkIndexEnum'
+                broadcastEnabled:
+                  type: boolean
+                clientIsolation:
+                  type: boolean
+                security:
+                  $ref: '#/components/schemas/guestNetworkSecurityType'
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128  #SAE maximum password length is 128bytes
+                pmf:  #Protected Management Frames
+                  $ref: '#/components/schemas/pmfEnum'
+                gatewayIp:
+                  $ref: '#/components/schemas/ipFormat'
+                subnetMask:
+                  $ref: '#/components/schemas/ipFormat'
+                startingIp:
+                  $ref: '#/components/schemas/ipFormat'
+                endingIp:
+                  $ref: '#/components/schemas/ipFormat'
+                leaseTime:
+                  type: integer
+                  minimum: 360   #Minutes
+                  maximum: 1440  #Minutes
+              example:
+                security: "WPA2-PSK"
+                password: "12345678"
+                ssid: "EMPLUS-guest"
+                clientIsolation: true
+                broadcastEnabled: true
+                enabled: true
+                gatewayIp: "172.30.1.1"
+                subnetMask: "255.255.255.0"
+                startingIp: "172.30.1.100"
+                endingIp: "172.30.1.200"
+                leaseTime: 1440
+                networkIndex: 39
+              oneOf: [
+                {
+                  properties: {
+                    security: { enum: [WPA3-SAE MIXED, WPA3-SAE, WPA2-PSK] }
+                  },
+                  required: [ password ]
+                },
+                {
+                  properties: {
+                    security: { enum: [OPEN, OWE] }
+                  }
+                }
+              ]
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                properties:
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return WLAN Guset Network configuration by networkIndex"
+      description: Return WLAN Guset Network configuration by networkIndex
+      operationId: anaGetGuestNetworkConfigBynetworkIndexV2
+      parameters:
+        - in: query
+          name: networkIndex
+          required: true
+          schema:
+            $ref: '#/components/schemas/guestNetworkIndexEnum'
+          description: The networkIndex which frontend want to query
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ssid:
+                    type: string
+                    minLength: 1
+                    maxLength: 32
+                  enabled:
+                    type: boolean
+                  broadcastEnabled:
+                    type: boolean
+                  clientIsolation:
+                    type: boolean
+                  networkIndex:
+                    $ref: '#/components/schemas/guestNetworkIndexEnum'
+                  security:
+                    $ref: '#/components/schemas/guestNetworkSecurityType'
+                  password:
+                    type: string
+                    minLength: 8
+                    maxLength: 128  #SAE maximum password length is 128bytes
+                  pmf:  #Protected Management Frames
+                    $ref: '#/components/schemas/pmfEnum'
+                  gatewayIp:
+                    $ref: '#/components/schemas/ipFormat'
+                  subnetMask:
+                    $ref: '#/components/schemas/ipFormat'
+                  startingIp:
+                    $ref: '#/components/schemas/ipFormat'
+                  endingIp:
+                    $ref: '#/components/schemas/ipFormat'
+                  leaseTime:
+                    type: integer
+                    minimum: 360   #Minutes
+                    maximum: 1440  #Minutes
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:  # GET /v2/wireless/guestnetwork example
+                  ssid: "EMPLUS-guest"
+                  enabled: true
+                  broadcastEnabled: true
+                  clientIsolation: true
+                  networkIndex: 39
+                  security: "WPA2-PSK"
+                  password: "12345678"
+                  pmf: 1
+                  gatewayIp: "172.30.1.1"
+                  subnetMask: "255.255.255.0"
+                  startingIp: "172.30.1.100"
+                  endingIp: "172.30.1.200"
+                  leaseTime: 1440
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+  /v1/wireless/guestnetwork:
+    post: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Add WLAN Guest Network configuration by networkIndex"
+      description: Add WLAN Guest Network configuration by networkIndex
+      operationId: anaAddGuestNetworkConfigBynetworkIndex
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ssid
+                - enabled
+                - networkIndex
+                - broadcastEnabled
+                - clientIsolation
+                - security
+                - pmf
+              properties:
+                ssid:
+                  type: string
+                  minLength: 1
+                  maxLength: 32
+                enabled:
+                  type: boolean
+                networkIndex:
+                  $ref: '#/components/schemas/guestNetworkIndexEnum'
+                broadcastEnabled:
+                  type: boolean
+                clientIsolation:
+                  type: boolean
+                security:
+                  $ref: '#/components/schemas/guestNetworkSecurityType'
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128  #SAE maximum password length is 128bytes
+                pmf:  #Protected Management Frames
+                  $ref: '#/components/schemas/pmfEnum'
+                gatewayIp:
+                  $ref: '#/components/schemas/ipFormat'
+                subnetMask:
+                  $ref: '#/components/schemas/ipFormat'
+                startingIp:
+                  $ref: '#/components/schemas/ipFormat'
+                endingIp:
+                  $ref: '#/components/schemas/ipFormat'
+              example:
+                security: "WPA2-PSK"
+                password: "12345678"
+                ssid: "EMPLUS-guest"
+                clientIsolation: true
+                broadcastEnabled: true
+                enabled: true
+                gatewayIp: "172.30.1.1"
+                subnetMask: "255.255.255.0"
+                startingIp: "172.30.1.100"
+                endingIp: "172.30.1.200"
+                networkIndex: 39
+              oneOf: [
+                {
+                  properties: {
+                    security: { enum: [WPA3-SAE MIXED, WPA3-SAE, WPA2-PSK] }
+                  },
+                  required: [ password ]
+                },
+                {
+                  properties: {
+                    security: { enum: [OPEN, OWE] }
+                  }
+                }
+              ]
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                properties:
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    patch: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Modify WLAN Guest Network configuration by networkIndex"
+      description: Modify WLAN Guest Network configuration by networkIndex
+      operationId: anaModifyGuestNetworkConfigBynetworkIndex
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - networkIndex
+              properties:
+                ssid:
+                  type: string
+                  minLength: 1
+                  maxLength: 32
+                enabled:
+                  type: boolean
+                networkIndex:
+                  $ref: '#/components/schemas/guestNetworkIndexEnum'
+                broadcastEnabled:
+                  type: boolean
+                clientIsolation:
+                  type: boolean
+                security:
+                  $ref: '#/components/schemas/guestNetworkSecurityType'
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128  #SAE maximum password length is 128bytes
+                pmf:  #Protected Management Frames
+                  $ref: '#/components/schemas/pmfEnum'
+                gatewayIp:
+                  $ref: '#/components/schemas/ipFormat'
+                subnetMask:
+                  $ref: '#/components/schemas/ipFormat'
+                startingIp:
+                  $ref: '#/components/schemas/ipFormat'
+                endingIp:
+                  $ref: '#/components/schemas/ipFormat'
+              example:
+                security: "WPA2-PSK"
+                password: "12345678"
+                ssid: "EMPLUS-guest"
+                clientIsolation: true
+                broadcastEnabled: true
+                enabled: true
+                gatewayIp: "172.30.1.1"
+                subnetMask: "255.255.255.0"
+                startingIp: "172.30.1.100"
+                endingIp: "172.30.1.200"
+                networkIndex: 39
+              oneOf: [
+                {
+                  properties: {
+                    security: { enum: [WPA3-SAE MIXED, WPA3-SAE, WPA2-PSK] }
+                  },
+                  required: [ password ]
+                },
+                {
+                  properties: {
+                    security: { enum: [OPEN, OWE] }
+                  }
+                }
+              ]
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                properties:
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return WLAN Guset Network configuration by networkIndex"
+      description: Return WLAN Guset Network configuration by networkIndex
+      operationId: anaGetGuestNetworkConfigBynetworkIndex
+      parameters:
+        - in: query
+          name: networkIndex
+          required: true
+          schema:
+            $ref: '#/components/schemas/guestNetworkIndexEnum'
+          description: The networkIndex which frontend want to query
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ssid:
+                    type: string
+                    minLength: 1
+                    maxLength: 32
+                  enabled:
+                    type: boolean
+                  broadcastEnabled:
+                    type: boolean
+                  clientIsolation:
+                    type: boolean
+                  networkIndex:
+                    $ref: '#/components/schemas/guestNetworkIndexEnum'
+                  security:
+                    $ref: '#/components/schemas/guestNetworkSecurityType'
+                  password:
+                    type: string
+                    minLength: 8
+                    maxLength: 128  #SAE maximum password length is 128bytes
+                  pmf:  #Protected Management Frames
+                    $ref: '#/components/schemas/pmfEnum'
+                  gatewayIp:
+                    $ref: '#/components/schemas/ipFormat'
+                  subnetMask:
+                    $ref: '#/components/schemas/ipFormat'
+                  startingIp:
+                    $ref: '#/components/schemas/ipFormat'
+                  endingIp:
+                    $ref: '#/components/schemas/ipFormat'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:  # GET /v1/wireless/guestnetwork example
+                  ssid: "EMPLUS-guest"
+                  enabled: true
+                  broadcastEnabled: true
+                  clientIsolation: true
+                  networkIndex: 39
+                  security: "WPA2-PSK"
+                  password: "12345678"
+                  pmf: 1
+                  gatewayIp: "172.30.1.1"
+                  subnetMask: "255.255.255.0"
+                  startingIp: "172.30.1.100"
+                  endingIp: "172.30.1.200"
+                  deviceId: D4:6A:91:55:66:11
+                  errCode: 0
+                  message: OK
+  /v1/wireless/radioconfig:
+    post: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Set WLAN Radio configuration"
+      description: Set WLAN Radio configuration
+      operationId: anaSetRadioConfig
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - radioconfig
+              type: object
+              properties:
+                radioconfig:
+                  required:
+                    - interface
+                    - enabled
+                      #- wirelessMode
+                    - channel
+                    - channelWidth
+                    - transmitPower
+                    - cts_rts_threshold
+                    - client_limit_enabled
+                    - client_limit
+                  type: object
+                  properties:
+                    interface:
+                      type: string
+                      enum: [ 2.4GHZ, 5GHZ, 6GHZ ]
+                    enabled:
+                      type: boolean
+                    #wirelessMode:
+                      #type: string
+                      #enum:
+                      #- 802.11B
+                      #- 802.11G
+                      #- 802.11BG
+                      #- 802.11BGN
+                      #- 802.11N
+                      #- 802.11A
+                      #- 802.11AN
+                      #- 802.11ACN
+                      #- 802.11AX  # 11AX can enable WIFI6
+                      #- 802.11BE
+                    channel:
+                      type: integer
+                      minimum: 0
+                      maximum: 196
+                    ext_channel:
+                      type: string
+                      enum: [ lower, upper ]
+                    channelWidth:
+                      type: string
+                      enum:
+                        - HT20
+                        - HT20_40
+                        - HT40
+                        - HT80
+                        - HT160  # for AN520 only
+                        - HT320  # for WIFI 6G
+                    transmitPower:
+                      type: integer
+                    cts_rts_threshold:
+                      type: integer
+                    qam256:
+                      description: 2.4G only, not required
+                      type: boolean
+                    dfs:
+                      description: |
+                        5G only, not required
+                        For outdoor device, DFS can not be disable if current country_code is at CE region
+                      type: boolean
+                    psc:
+                      description: |
+                        6G only, not required
+                        for psc primary channel setting
+                      type: boolean
+                    client_limit_enabled:
+                      type: boolean
+                    client_limit:
+                      type: integer
+                      minimum: 1
+                      maximum: 127
+              example:
+                radioconfig:
+                  interface: '2.4GHZ'
+                  enabled: true
+                  #wirelessMode: 802.11AX
+                  channel: 0
+                  ext_channel: "upper"
+                  channelWidth: "HT40"
+                  transmitPower: 21
+                  cts_rts_threshold: 2346
+                  qam256: true
+                  client_limit_enabled: true
+                  client_limit: 127
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return WLAN Radio configuration"
+      description: Return WLAN Radio configuration
+      operationId: anaGetRadioConfig
+      parameters:
+        - in: query
+          name: interface
+          required: true
+          schema:
+            type: string
+            enum: [ 2.4GHZ, 5GHZ, 6GHZ ]
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  radioconfig:
+                    type: object
+                    properties:
+                      interface:
+                        type: string
+                        enum: [ 2.4GHZ, 5GHZ, 6GHZ ]
+                      enabled:
+                        type: boolean
+                      wirelessMode:
+                        type: string
+                        enum:
+                          - 802.11B
+                          - 802.11G
+                          - 802.11BG
+                          - 802.11BGN
+                          - 802.11N
+                          - 802.11A
+                          - 802.11AN
+                          - 802.11ACN
+                          - 802.11AX  # 11AX can enable WIFI6
+                      channel:
+                        type: integer
+                        minimum: 0
+                        maximum: 196
+                      ext_channel:
+                        type: string
+                        enum: [ lower, upper ]
+                      channelActual:
+                        type: integer
+                        minimum: 1
+                        maximum: 196
+                      channelWidth:
+                        type: string
+                        enum:
+                          - HT20
+                          - HT20_40
+                          - HT40
+                          - HT80
+                          - HT160  # for AN520 only
+                      channelutilization:
+                        type: string
+                        minLength: 2
+                        maxLength: 4
+                      transmitPower:
+                        type: integer
+                      cts_rts_threshold:
+                        type: integer
+                        minimum: 1
+                        maximum: 2346
+                      qam256:
+                        description: 2.4G only, not required
+                        type: boolean
+                      dfs:
+                        description: 5G only, not required
+                        type: boolean
+                      client_limit_enabled:
+                        type: boolean
+                      client_limit:
+                        type: integer
+                        minimum: 1
+                        maximum: 127
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/wireless/acl:
+    post: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Set MAC filter configuration"
+      description: Set MAC filter configuration
+      operationId: anaSetMACFilterSettings
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - aclconfig
+              type: object
+              properties:
+                aclconfig:
+                  $ref: '#/components/schemas/AclConfigure'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return MAC filter configuration"
+      description: Return MAC filter configuration
+      operationId: anaGetMACFilterSettings
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  aclconfig:
+                    $ref: '#/components/schemas/AclConfigure'
+  /v1/wireless/stations:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: 'Get client information by networkIndex'
+      description: |
+          Get per ssid client information by networkIndex
+          If networkIndex=NULL, return full client list.
+          If networkIndex is empty, return error
+      operationId: anaGetClientList
+      parameters:
+        - in: query
+          name: networkIndex
+          description: The networkIndex is used to query client list
+          required: true
+          schema:
+            $ref: '#/components/schemas/networkIndexEnum'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  client_list:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/WiFiClientInfo'
+                example:
+                  deviceId: 'ac:de:48:00:55:66'
+                  client_list:
+                    - cmac: 'ac:de:48:00:11:22'
+                      networkIndex: 51
+                      mac: 'ac:de:48:00:55:67'
+                      ssid: arankis_init
+                      interface: 5GHZ
+                      name: Iron man Armor
+                      cip: '192.168.1.191'
+                      rx: 12300
+                      tx: 67800
+                      signal: -52
+                      os: iOS
+                    - cmac: 'ac:de:48:00:11:23'
+                      networkIndex: 52
+                      mac: 'ac:de:48:00:55:68'
+                      ssid: arankis_init
+                      interface: 5GHZ
+                      name: Thor Hammer
+                      cip: '192.168.1.192'
+                      rx: 22300
+                      tx: 77800
+                      signal: -55
+                      os: iOS
+                    - cmac: '12:3B:AD:11:49:F4'
+                      networkIndex: 71
+                      mac: '32:DD:04:CC:DD:05'
+                      ssid: arankis_init
+                      interface: '6GHZ'
+                      name: Thor Hammer
+                      cip: '192.168.1.193'
+                      rx: 24090
+                      tx: 14906
+                      signal: -68
+                      os: iOS
+
+  /v2/wireless/stations:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: 'Get client information by networkIndex'
+      description: |
+          Get per ssid client information by networkIndex
+          If networkIndex=NULL, return full client list.
+      operationId: anaGetClientListV2
+      parameters:
+        - in: query
+          name: networkIndex
+          description: The networkIndex is used to query client list
+          required: true
+          schema:
+            $ref: '#/components/schemas/networkIndexEnum'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  client_list:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/WiFiClientInfo'
+                example:
+                  deviceId: '4C:13:65:25:79:22'
+                  client_list:
+                    - mld_mac: 'EA:63:36:FE:D6:31'
+                      mldId: 1
+                      cmac: '36:8F:37:F6:ED:FE'
+                      networkIndex: 0
+                      mac: '4C:13:65:25:79:24'
+                      ssid: 'arankis_init'
+                      interface: '2.4GHZ'
+                      name: 'iPhone'
+                      cip: '192.168.1.190'
+                      rx: 0
+                      tx: 0
+                      signal: -27
+                      os: '017903060f6c7277fc'
+                      connected_status: true
+                    - mld_mac: 'EA:63:36:FE:D6:31'
+                      mldId: 1
+                      cmac: '92:C4:D7:FD:18:53'
+                      networkIndex: 50
+                      mac: '4C:13:65:25:79:25'
+                      ssid: 'arankis_init'
+                      interface: '5GHZ'
+                      name: 'iPhone'
+                      cip: '192.168.1.190'
+                      rx: 0
+                      tx: 0
+                      signal: -97
+                      os: '017903060f6c7277fc'
+                      connected_status: true
+                    - cmac: 'AC:DE:48:00:11:22'
+                      networkIndex: 51
+                      mac: '52:13:65:25:79:25'
+                      ssid: 'arankis_init2'
+                      interface: '5GHZ'
+                      name: 'Iron man Armor'
+                      cip: '192.168.1.191'
+                      rx: 12300
+                      tx: 67800
+                      signal: -52
+                      os: '017903060f6c7277fc'
+                      connected_status: true
+                    - cmac: 'AC:DE:48:00:11:23'
+                      networkIndex: 51
+                      mac: 'AC:DE:48:00:55:68'
+                      ssid: 'arankis_init2'
+                      interface: '5GHZ'
+                      name: 'Thor Hammer'
+                      cip: '192.168.1.192'
+                      rx: 22300
+                      tx: 77800
+                      signal: -55
+                      os: '017903060f6c7277fc'
+                      connected_status: true
+                    - mld_mac: 'EA:63:36:FE:D6:31'
+                      mldId: 1
+                      cmac: 'FE:41:ED:4F:36:69'
+                      networkIndex: 70
+                      mac: '96:79:26:25:79:27'
+                      ssid: 'arankis_init'
+                      interface: '6GHZ'
+                      name: 'iPhone'
+                      cip: '192.168.1.190'
+                      rx: 15473
+                      tx: 11609
+                      signal: -40
+                      os: '017903060f6c7277fc'
+                      connected_status: true
+                    - cmac: '12:3B:AD:11:49:F4'
+                      networkIndex: 71
+                      mac: '96:79:26:25:79:28'
+                      ssid: arankis_init2
+                      interface: '6GHZ'
+                      name: Thor Hammer
+                      cip: '192.168.1.193'
+                      rx: 24090
+                      tx: 14906
+                      signal: -68
+                      os: '017903060f6c7277fc'
+                      connected_status: true
+
+  /v1/wireless/deny-station:
+    post: # API Required APPLY # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: Deny wireless client networkIndex
+      description: Deny wireless client by networkIndex
+      operationId: deleteWirelessStation
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - networkIndex
+                - deny_mac_addr
+              type: object
+              properties:
+                networkIndex:
+                  $ref: '#/components/schemas/networkIndexEnum'
+                deny_mac_addr:
+                  required:
+                    - mac_address
+                  type: object
+                  properties:
+                    mac_address:
+                      $ref: '#/components/schemas/macFormat'
+              example:
+                networkIndex: 50
+                deny_mac_addr:
+                  mac_address: 'd4:6a:91:11:11:11'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/wireless/reset-wifi:
+    post: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Reset AP radio config to default"
+      description: Reset AP radio config to default, guestnetwork setting has no changes
+      operationId: resetWiFiConfig
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceMAC'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /v1/wireless/channelUtil:
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return current channel utilization of 2G/5G/6G"
+      description: Return current channel utilization of 2G/5G/6G
+      operationId: anaGetChannelUtil
+      parameters:
+        - in: query
+          name: interface
+          required: true
+          schema:
+            type: string
+            enum: [ 2.4GHZ, 5GHZ, 6GHZ ]
+            description: Supported radio list
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  channelUtil:
+                    type: string
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+  /v1/wireless/bridge:
+    post: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Setting wireless bridge configure."
+      description: Setting wireless bridge configure.
+      operationId: anaPostWlanBridge
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wifiBridgeConfig:
+                  properties:
+                    enable:
+                      type: boolean
+                    radio:
+                      type: string
+                      enum: [ "2.4GHZ", "5GHZ" ]
+                    ssid:
+                      type: string
+                    key:
+                      type: string
+                      minLength: 8
+                      maxLength: 64
+                    remoteBssid:
+                      description: MAC address, colon(:) or hyphen(-) separated, UPPERCASE
+                      type: string
+                      pattern: '^[A-F0-9]{2}([:-][A-F0-9]{2}){5}$'  #XX:XX:XX:XX:XX:XX,  X:'upper case' or 'numeric'
+                      minLength: 17
+                      maxLength: 17
+                      example:
+                        - "4C:13:65:11:22:33"
+                        - "4C-13-65-11-22-33"
+                    role:
+                      type: string
+                      enum:
+                        - "Wired Bridge"
+                        - "Wireless Bridge"
+                  example:
+                    enable: true
+                    radio: "5GHZ"
+                    ssid: "wlanBridge5G"
+                    key: "12345678"
+                    remoteBssid: "00:11:22:33:44:5F"
+                    role: "Wired Bridge"
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return current wireless bridge configurations"
+      description: Return current wireless bridge configurations
+      operationId: anaGetWlanBridge
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wifiBridgeConfig:
+                    properties:
+                      'Radio0':
+                        $ref: '#/components/schemas/wifiBridgeConfig'
+                      'Radio1':
+                        $ref: '#/components/schemas/wifiBridgeConfig'
+                  wifiBridgeStatus:
+                    $ref: '#/components/schemas/wifiBridgeStatus'
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+                example:
+                  wifiBridgeConfig:
+                    Radio0:
+                      enable: false
+                      radio: "2.4GHZ"
+                      role: "--"
+                      security: "WPA3-SAE"
+                      ssid: "Target SSID"
+                      localBssid: "6E:13:65:C1:11:4A"
+                      remoteBssid: ""
+                      key: ""
+                    Radio1:
+                      enable: true
+                      radio: "5GHZ"
+                      role: "Wireless Bridge"
+                      security: "WPA3-SAE"
+                      ssid: "Target SSID 5G"
+                      localBssid: "6E:13:65:C1:11:4B"
+                      remoteBssid: "AA:DC:96:33:66:9C"
+                      key: "55555555"
+                  wifiBridgeStatus:
+                    role: "Wireless Bridge"
+                    uptime: "0 d 6 h 12 m 34 s"
+                    connection: "Online"
+                  deviceId: "D4:6A:91:55:66:11"
+                  errCode: 0
+                  message: "OK"
+  /v1/wireless/bridge/connectionHealth:
+    post: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Run wireless bridge connection health test"
+      description: Run wireless bridge connection health test.
+      operationId: anaPostWlanBridgeConnectionHealth
+      requestBody:
+        description: accept empty JSON object or deviceId
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceId:
+                  $ref: '#/components/schemas/macFormat'
+              example:
+                - '{}'
+                - '{"deviceId":"02:04:06:55:66:88"}'
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithTime'
+    get: # API is synchronous
+      security:
+        - bearerAuth: []
+      tags:
+        - Wireless
+      summary: "Return wireless bridge connection health test result"
+      description: Return wireless bridge connection health test result
+      operationId: anaGetWlanBridgeConnectionHealth
+      responses:
+        '200':
+          description: |
+            Successful operation.
+            Inside API Response structure, **errCode** value 0 indicate API execute successfully and
+            non-zero value indicate error happened, **message** shows the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  connectionHealth:
+                    properties:
+                      throughput:
+                        type: string
+                      latency:
+                        type: string
+                      jitter:
+                        type: string
+                      signalStrength:
+                        type: string
+                      packetLoss:
+                        type: string
+                    example:
+                      throughput: "176.67 Mbps"
+                      latency: "4.88 ms"
+                      jitter: "1.80 ms"
+                      signalStrength: "-45.00 dBm"
+                      packetLoss: "0"
+                  status:
+                    properties:
+                      throughput:
+                        type: string
+                        enum: [ "Excellent", "Good", "Fair", "Poor" ]
+                      latency:
+                        type: string
+                        enum: [ "Excellent", "Good", "Fair", "Poor" ]
+                      jitter:
+                        type: string
+                        enum: [ "Excellent", "Good", "Fair", "Poor" ]
+                      signalStrength:
+                        type: string
+                        enum: [ "Excellent", "Good", "Fair", "Poor" ]
+                      packetLoss:
+                        type: string
+                        enum: [ "Perfect", "Good", "Fair", "Poor" ]
+                      ConnectionHealth:
+                        type: string
+                    example:
+                      throughput: "Fair"
+                      latency: "Good"
+                      jitter: "Good"
+                      signalStrength: "Good"
+                      packetLoss: "Perfect"
+                      ConnectionHealth: "0 - Poor"
+                  deviceId:
+                    $ref: '#/components/schemas/macFormat'
+                  errCode:
+                    $ref: '#/components/schemas/errCodeEnum'
+                  message:
+                    type: string
+                    enum: [ OK ]
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    macFormat:
+      description: MAC address, colon(:) separated, UPPERCASE
+      type: string
+      pattern: '^[A-F0-9]{2}(:[A-F0-9]{2}){5}$'  #XX:XX:XX:XX:XX:XX,  X:'upper case' or 'numeric'
+      minLength: 17
+      maxLength: 17
+      example:
+        - 4C:13:65:11:22:3F
+    ipFormat:
+      description: min value = 1.1.1.1 - max value = 255.255.255.255
+      type: string
+      pattern: '^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$'
+      example: 192.168.1.1
+      minLength: 7
+      maxLength: 15
+    errCodeEnum:
+      type: integer
+      enum:
+        - 0   # OK
+        - 1   # redirect
+        - 2   # device id not found
+        - 3   # device id not match
+        - 4   # invalid parameter
+        - 5   # invalid provilege
+        - 6   # API not found
+        - 7   # system firmware upgrade event
+        - 8   # version not found
+        - 9   # version not supported
+        - 10  # create JSON fail
+        - 11  # no available network
+        - 12  # login fails
+        - 13  # login timeout
+        - 14  # TPM auth failure
+        - 15  # Interface not ready
+        - 16  # Reacquire site survey data
+        - 17  # Site survey failure
+    SuccessWithTime:
+      required:
+        - deviceId
+        - errCode
+        - waitingTime
+      type: object
+      properties:
+        waitingTime:
+          type: integer
+        deviceId:
+          $ref: '#/components/schemas/macFormat'
+        errCode:
+          $ref: '#/components/schemas/errCodeEnum'
+        message:
+          type: string
+          enum: [ OK ]
+      example:
+        waitingTime: 300
+        deviceId: D4:6A:91:55:66:11
+        errCode: 0
+        message: OK
+    Success:
+      required:
+        - deviceId
+        - errCode
+      type: object
+      properties:
+        deviceId:
+          $ref: '#/components/schemas/macFormat'
+        errCode:
+          $ref: '#/components/schemas/errCodeEnum'
+        message:
+          type: string
+          enum: [ OK ]
+      example:
+        deviceId: D4:6A:91:55:66:11
+        errCode: 0
+        message: OK
+    networkIndexEnum:
+      type: integer
+      description: newtork index 0~7(2G), 50~57(5G), 70~77(6G)
+      enum: [ 0, 1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56, 57, 70, 71, 72, 73, 74, 75, 76, 77 ]
+      example: 50
+    guestNetworkIndexEnum:
+      type: integer
+      description: guest newtork index 39(2G), 79(6G), 89(5G)
+      enum: [ 39, 79, 89 ]
+      example: 89
+    guestNetworkSecurityType:
+      type: string
+      enum:
+        - OPEN
+        - OWE
+        - WPA2-PSK
+        #- WPA-PSK MIXED
+        - WPA3-SAE
+        - WPA3-SAE MIXED  #GUI drop-down list display 'WPA2/WPA3-SAE Mixed'
+    pmfEnum:  #Protected Management Frames
+      type: integer
+      enum:
+        - 0    # Disabled
+        - 1    # Enabled
+        - 2    # Required
+    DeviceMAC:
+      type: object
+      properties:
+        deviceMAC:
+          $ref: '#/components/schemas/macFormat'
+    SystemInfo:
+      type: object
+      properties:
+        system:
+          $ref: '#/components/schemas/CpuMemStatus'
+        temperature:
+          $ref: '#/components/schemas/Temperature'
+        power:
+          $ref: '#/components/schemas/PowerStatus'
+        lan:
+          $ref: '#/components/schemas/EthernetStatus'
+        radios:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/SystemRadioStatus'
+    SystemInfoV2:
+      type: object
+      properties:
+        system:
+          $ref: '#/components/schemas/CpuMemStatus'
+        temperature:
+          $ref: '#/components/schemas/Temperature'
+        power:
+          $ref: '#/components/schemas/PowerStatus'
+        lan:
+          $ref: '#/components/schemas/EthernetStatus'
+        radios:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/SystemRadioStatusV2'
+    CpuMemStatus:
+      type: object
+      properties:
+        cpu:
+          type: string
+        memFree:
+          description: Unit is 'KBytes'
+          type: integer
+        memUsed:
+          type: string
+          minimum: 1
+      example:
+        cpu: '37%'
+        memFree: 12345678
+        memUsed: '50%'
+    Temperature:
+      type: object
+      properties:
+        tempCPU:
+          type: string
+        temp2G:
+          type: string
+        temp5G:
+          type: string
+        temp6G:
+          type: string
+      example:
+        tempCPU: '61°C'
+        temp2G: '84°C'
+        temp5G: '86°C'
+        temp6G: '85°C'
+    PowerStatus:
+      type: object
+      properties:
+        powerState:
+          description: |
+            enum list explain:
+              * DC: Direct Current
+              * BT: IEEE 802.3bt
+              * AT: IEEE 802.3at
+              * AF: IEEE 802.3af
+              * NA: Not Available
+          type: string
+          enum:
+            - DC
+            - BT
+            - AT
+            - AF
+            - NA
+    EthernetStatus:
+      type: object
+      properties:
+        rx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        tx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+    SystemRadioStatus:
+      type: object
+      properties:
+        interface:
+          description: Supported radio list
+          type: string
+          enum: [ 2.4GHZ, 5GHZ, 6GHZ]
+        enabled:
+          type: boolean
+        rx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        tx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        networks:
+          type: integer
+        clients:
+          type: integer
+      example:
+        - interface_name: '2.4GHZ'
+          enabled: true
+          tx: 1356
+          rx: 324
+          networks: 1
+          clients: 0
+        - interface_name: '5GHZ'
+          enabled: true
+          tx: 666208
+          rx: 231908
+          networks: 1
+          clients: 0
+        - interface_name: '6GHZ'
+          enabled: true
+          tx: 0
+          rx: 0
+          networks: 1
+          clients: 0
+    SystemRadioStatusV2:
+      type: object
+      properties:
+        interface:
+          description: Supported radio list
+          type: string
+          enum: [ 2.4GHZ, 5GHZ, 6GHZ]
+        enabled:
+          type: boolean
+        rx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        tx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        networks:
+          type: integer
+        clients:
+          type: integer
+        guestNetwork:
+          type: boolean
+        guestClients:
+          type: integer
+      example:
+        - interface_name: '2.4GHZ'
+          enabled: true
+          tx: 1356
+          rx: 324
+          networks: 1
+          clients: 0
+          guestNetwork: true
+          guestClients: 1
+        - interface_name: '5GHZ'
+          enabled: true
+          tx: 666208
+          rx: 231908
+          networks: 1
+          clients: 0
+          guestNetwork: true
+          guestClients: 1
+        - interface_name: '6GHZ'
+          enabled: true
+          tx: 0
+          rx: 0
+          networks: 1
+          clients: 0
+          guestNetwork: true
+          guestClients: 1
+    SystemCfg:
+      type: object
+      required:
+        - opMode
+        - opRole
+        - led_enable
+        - resetPassword_enable
+      properties:
+        opMode:
+          type: string
+          enum: [ AP ]
+        opRole:
+          type: string
+          enum: [ --, CONTROLLER, NODE ]
+        system_name:
+          type: string
+        country_code:
+          description: |
+            optional, FCC only support 840.
+            For outdoor device, country code can not be set to CE region if dfs was disabled
+          type: integer
+          enum:
+            - 8     # Albania
+            - 36    # Australia
+            - 40    # Austria
+            - 56    # Belgium
+            - 100   # Bulgaria
+            - 124   # Canada
+            - 191   # Croatia
+            - 196   # Cyprus
+            - 203   # Czech Republic
+            - 208   # Denmark
+            - 233   # Estonia
+            - 246   # Finland
+            - 250   # France
+            - 276   # Germany
+            - 300   # Greece
+            - 348   # Hungary
+            - 352   # Iceland
+            - 372   # Ireland
+            - 376   # Israel
+            - 380   # Italy
+            - 428   # Latvia
+            - 438   # Liechtenstein
+            - 440   # Lithuania
+            - 442   # Luxembourg
+            - 470   # Malta
+            - 499   # Montenegro
+            - 528   # Netherlands
+            - 530   # Netherlands Antilles
+            - 554   # New Zealand
+            - 578   # Norway
+            - 616   # Poland
+            - 620   # Portugal
+            - 642   # Romania
+            - 643   # Russia
+            - 688   # Serbia
+            - 703   # Slovakia
+            - 705   # Slovenia
+            - 724   # Spain
+            - 752   # Sweden
+            - 756   # Switzerland
+            - 792   # Turkey
+            - 807   # The Former Yugoslav Republic of Macedonia
+            - 826   # United Kingdom
+            - 840   # United States
+        led_enable:
+          description: |
+            *NOTE* Required on non-outdoor product
+          type: boolean
+        resetPassword_enable:
+          type: boolean
+    WiFiClientInfo:
+      type: object
+      properties:
+        mld_mac:
+          $ref: '#/components/schemas/macFormat'
+        mldId:
+          type: integer
+        cmac:
+          $ref: '#/components/schemas/macFormat'
+        networkIndex:
+          $ref: '#/components/schemas/networkIndexEnum'
+        mac:
+          $ref: '#/components/schemas/macFormat'
+        ssid:
+          type: string
+          minLength: 1
+          maxLength: 32
+        interface:
+          type: string
+        name:
+          type: string
+          minLength: 1
+          maxLength: 63
+        cip:
+          $ref: '#/components/schemas/ipFormat'
+        rx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        tx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        signal:
+          type: integer
+        os:
+          type: string
+        connected_status:
+          type: boolean
+    AclConfigure:
+      required:
+        - enabled
+        - black_mac_list
+        - white_mac_list
+        - policy
+        - schedule_enabled
+        - schedule_templates
+        - week_schedule
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        black_mac_list:
+          type: string
+        white_mac_list:
+          type: string
+        policy:
+          type: string
+          enum: [ DENY, ALLOW ]
+        schedule_enabled:
+          type: boolean
+        schedule_templates:
+          type: integer
+          description: |
+            - 2: Available 8-17 daily
+            - 3: Available 8-17 daily except weekends
+            - 4: Custom Schedule
+        week_schedule:
+          $ref: '#/components/schemas/WeekSch'
+      example:
+        enabled: false
+        black_mac_list: '00:11:11:11:11:11 00:22:22:22:22:22'
+        white_mac_list: '00:11:11:11:11:11 00:22:22:22:22:22'
+        policy: 'ALLOW'
+        schedule_enabled: true
+        schedule_templates: 2
+        week_schedule:
+          su:
+            available: true
+            start: "00:00"
+            end: "24:00"
+          mo:
+            available: true
+            start: "00:00"
+            end: "24:00"
+          tu:
+            available: true
+            start: "00:00"
+            end: "24:00"
+          we:
+            available: true
+            start: "00:00"
+            end: "24:00"
+          th:
+            available: true
+            start: "00:00"
+            end: "24:00"
+          fr:
+            available: true
+            start: "00:00"
+            end: "24:00"
+          sa:
+            available: true
+            start: "00:00"
+            end: "24:00"
+    EthernetPortStatus:
+      type: object
+      properties:
+        speed:
+          type: string
+          enum:
+            - Not Connected
+            - 10Mbps
+            - 100Mbps
+            - 1Gbps
+            - 2.5Gbps
+            - 5Gbps
+            - 10Gbps
+        duplexMode:
+          type: string
+          enum: [ --, FULL, HALF ]
+        macaddress:
+          $ref: '#/components/schemas/macFormat'
+        rx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        tx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+      example:
+        speed: 1Gbps
+        duplexMode: FULL
+        macAddress: 00:02:6F:11:11:11
+        rx: 329612
+        tx: 328765
+    EthernetPortStatuses:
+      type: object
+      properties:
+        'LAN1':
+          $ref: '#/components/schemas/EthernetPortStatus'
+        'LAN2':
+          $ref: '#/components/schemas/EthernetPortStatus'
+    EthernetPortConf:
+      required:
+        - speed
+      type: object
+      properties:
+        speed:
+          type: string
+          enum:
+            - Auto
+            - Disable
+            - 10Mbps
+            - 100Mbps
+            - 1Gbps
+            - 2.5Gbps
+            - 5Gbps
+            - 10Gbps
+        duplexMode:
+          type: string
+          enum: [ FULL, HALF ]
+        reset:
+          description: outdoor model only
+          type: boolean
+      example:
+        - speed: 1Gbps
+        - speed: 100Mbps
+          duplexMode: HALF
+        - reset: true
+      oneOf: [
+        {
+          properties: {
+            speed: { enum: [ Auto, Disable, 1Gbps, 2.5Gbps, 5Gbps, 10Gbps ] }
+          }
+        },
+        {
+          properties: {
+            speed: { enum: [ 10Mbps, 100Mbps ] }
+          },
+          required: [ duplexMode ]
+        }
+      ]
+    EthernetPortConfs:
+      type: object
+      description: Only LAN2 has reset boolean properties
+      properties:
+        'LAN1':
+          $ref: '#/components/schemas/EthernetPortConf'
+        'LAN2':
+          $ref: '#/components/schemas/EthernetPortConf'
+    Radius:
+      required:
+        - radiusServer
+        - radiusPort
+        - radiusSecret
+        - accountingEnabled
+      type: object
+      properties:
+        radiusServer:
+          $ref: '#/components/schemas/ipFormat'
+        radiusPort:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        radiusSecret:
+          type: string
+          minLength: 1
+          maxLength: 64
+        accountingEnabled:
+          type: boolean
+        accountingServer:
+          $ref: '#/components/schemas/ipFormat'
+        accountingPort:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        accountingSecret:
+          type: string
+          minLength: 1
+          maxLength: 64
+        accountingInterval:
+          type: integer
+          minimum: 60
+          maximum: 600
+      example:
+        radiusServer: 10.0.0.7
+        radiusPort: 1812
+        radiusSecret: secret1812
+        accountingEnabled: true
+        accountingServer: 10.0.0.8
+        accountingPort: 1813
+        accountingSecret: secret1813
+        accountingInterval: 600
+    Vlan:
+      required:
+        - vlanEnable
+      type: object
+      properties:
+        vlanEnable:
+          type: boolean
+        vlanID:
+          type: integer
+          minimum: 1
+          maximum: 4092
+      example:
+        - vlanEnable: true
+          vlanID: 100
+        - vlanEnable: false
+      oneOf: [
+        {
+          properties: {
+            vlanEnable: { enum: [true] }
+          },
+          required: [ vlanID ]
+        },
+        {
+          properties: {
+            vlanEnable: { enum: [false] }
+          }
+        }
+      ]
+    WlanStatus:
+      required:
+        - networkIndex
+        - enabled
+        - mac
+        - interface
+        - clients
+        - rx
+        - tx
+      type: object
+      properties:
+        networkIndex:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/networkIndexEnum'
+        enabled:
+          type: boolean
+        mac:
+          $ref: '#/components/schemas/macFormat'
+        ssid:
+          type: string
+          minLength: 1
+          maxLength: 32
+        interface:
+          type: string
+          enum: [ 2.4GHZ, 5GHZ, 6GHZ, BOTH, BOTH25, BOTH26, BOTH56, ALL ]
+        clients:
+          type: integer
+          minimum: 0
+          maximum: 200
+        rx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        tx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+    GuestWlanStatus:
+      required:
+        - networkIndex
+        - enabled
+        - mac
+        - interface
+        - clients
+        - rx
+        - tx
+      type: object
+      properties:
+        networkIndex:
+          $ref: '#/components/schemas/guestNetworkIndexEnum'
+        enabled:
+          type: boolean
+        mac:
+          $ref: '#/components/schemas/macFormat'
+        ssid:
+          type: string
+          minLength: 1
+          maxLength: 32
+        interface:
+          type: string
+          enum: [ 2.4GHZ, 5GHZ, 6GHZ, BOTH, BOTH25, BOTH26, BOTH56, ALL ]
+        clients:
+          type: integer
+          minimum: 0
+          maximum: 200
+        rx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        tx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+    RadioStatus:
+      required:
+        - interface
+        - enabled
+        - rx
+        - tx
+        - networks
+        - clients
+      type: object
+      properties:
+        interface:
+          type: string
+          enum: [ 2.4GHZ, 5GHZ, 6GHZ ]
+        enabled:
+          type: boolean
+        rx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        tx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        networks:
+          type: integer
+          minimum: 0
+          maximum: 8
+        clients:
+          type: integer
+          minimum: 0
+          maximum: 200
+    RadioStatusV2:
+      required:
+        - interface
+        - enabled
+        - rx
+        - tx
+        - networks
+        - clients
+        - guestNetwork
+        - guestClients
+      type: object
+      properties:
+        interface:
+          type: string
+          enum: [ 2.4GHZ, 5GHZ, 6GHZ ]
+        enabled:
+          type: boolean
+        rx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        tx:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        networks:
+          type: integer
+          minimum: 0
+          maximum: 8
+        clients:
+          type: integer
+          minimum: 0
+          maximum: 200
+        guestNetwork:
+          type: boolean
+        guestClients:
+          type: integer
+          minimum: 0
+          maximum: 127
+    FWUpdate:
+      required:
+        - model
+        - hashAlgorithm
+        - checksum
+      type: object
+      properties:
+        model:
+          type: string
+          enum:
+            - AN520I
+            - AN520O
+            - AN820I
+            - AN920I
+        hashAlgorithm:
+          type: string
+          enum: [ MD5 ]
+        checksum:
+          type: string
+          minLength: 32
+          maxLength: 32
+    Login:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 32
+        password:
+          type: string
+          minLength: 8
+          maxLength: 64
+    Login_Token:
+      type: object
+      properties:
+        token:
+          type: string
+    DaySch:
+      required:
+        - available
+        - start
+        - end
+      type: object
+      properties:
+        available:
+          type: boolean
+        start:
+          description: 24-hour o'clock scale
+          type: string
+        end:
+          description: 24-hour o'clock scale
+          type: string
+      example:
+        available: true
+        start: '10:00'
+        end: '18:00'
+    WeekSch:
+      required:
+        - su
+        - mo
+        - tu
+        - we
+        - th
+        - fr
+        - sa
+      type: object
+      properties:
+        su:
+          $ref: '#/components/schemas/DaySch'
+        mo:
+          $ref: '#/components/schemas/DaySch'
+        tu:
+          $ref: '#/components/schemas/DaySch'
+        we:
+          $ref: '#/components/schemas/DaySch'
+        th:
+          $ref: '#/components/schemas/DaySch'
+        fr:
+          $ref: '#/components/schemas/DaySch'
+        sa:
+          $ref: '#/components/schemas/DaySch'
+    Scheduling:
+      type: object
+      required:
+        - enable
+      properties:
+        enable:
+          type: boolean
+        days:
+          $ref: '#/components/schemas/WeekSch'
+    Ethernet:
+      type: object
+      required:
+        - mode
+        - mgmt_vlan_tagged
+      properties:
+        mode:
+          type: string
+          enum: [ Static, DHCP ]
+        ip:
+          $ref: '#/components/schemas/ipFormat'
+        mask:
+          $ref: '#/components/schemas/ipFormat'
+        gateway:
+          $ref: '#/components/schemas/ipFormat'
+        primary_dns:
+          $ref: '#/components/schemas/ipFormat'
+        secondary_dns:
+          $ref: '#/components/schemas/ipFormat'
+        mgmt_vlan_tagged:
+          type: boolean
+        mgmt_vlan_id:
+          type: integer
+          minimum: 1
+          maximum: 4092
+      anyOf: [
+        {
+          properties: {
+            mode: { enum: [Static] },
+            mgmt_vlan_tagged: { enum: [true] }
+          },
+          required: [ ip, mask, gateway, primary_dns, secondary_dns, mgmt_vlan_id ]
+        },
+        {
+          properties: {
+            mode: { enum: [Static] },
+            mgmt_vlan_tagged: { enum: [false] }
+          },
+          required: [ ip, mask, gateway, primary_dns, secondary_dns ]
+        },
+        {
+          properties: {
+            mode: { enum: [DHCP] },
+            mgmt_vlan_tagged: { enum: [true] }
+          },
+          required: [ mgmt_vlan_id ]
+        },
+        {
+          properties: {
+            mode: { enum: [DHCP] },
+            mgmt_vlan_tagged: { enum: [false] }
+          }
+        },
+      ]
+    SNMPv2Config:
+      type: object
+      required:
+        - enable
+        - contact
+        - location
+        - port
+        - readCommunity
+        - writeCommunity
+        - trapServerIPAddress
+        - trapServerPort
+        - trapCommunity
+      properties:
+        enable:
+          type: boolean
+        contact:
+          type: string
+          minLength: 0
+          maxLength: 255
+        location:
+          type: string
+          minLength: 0
+          maxLength: 255
+        port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        readCommunity:
+          type: string
+          minLength: 1
+          maxLength: 64
+        writeCommunity:
+          type: string
+          minLength: 1
+          maxLength: 64
+        trapServerIPAddress:
+          $ref: '#/components/schemas/ipFormat'
+        trapServerPort:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        trapCommunity:
+          type: string
+          minLength: 1
+          maxLength: 64
+      example:
+        enable: true
+        contact: Bruce li
+        location: 3rdfloor
+        port: 161
+        readCommunity: public
+        writeCommunity: private
+        trapServerIPAddress: 192.168.20.20
+        trapServerPort: 162
+        trapCommunity: public
+    SNMPv3Config:
+      type: object
+      required:
+        - enable
+        - username
+        - authProtocol
+        - authKey
+        - privProtocol
+        - privKey
+        - engineId
+      properties:
+        enable:
+          type: boolean
+        username:
+          type: string
+          minLength: 1
+          maxLength: 32
+        authProtocol:
+          type: string
+          enum: [ MD5, SHA, None ]
+        authKey:
+          type: string
+          minLength: 8
+          maxLength: 64
+        privProtocol:
+          type: string
+          enum: [ DES, None ]
+        privKey:
+          type: string
+          minLength: 8
+          maxLength: 64
+        engineId:
+          type: string
+          minLength: 0
+          maxLength: 64
+      example:
+        enable: true
+        username: admin
+        authProtocol: MD5
+        authKey: '12345678'
+        privProtocol: DES
+        privKey: '12345678'
+        engineId: '1234'
+    SNMPConfig:
+      type: object
+      properties:
+        v2:
+          $ref: '#/components/schemas/SNMPv2Config'
+        v3:
+          $ref: '#/components/schemas/SNMPv3Config'
+    STPConfig:
+      type: object
+      required:
+        - enable
+        - helloTime
+        - maxAge
+        - forwardDelay
+        - priority
+      properties:
+        enable:
+          type: boolean
+        helloTime:
+          type: integer
+          minimum: 1
+          maximum: 10
+        maxAge:
+          type: integer
+          minimum: 6
+          maximum: 40
+        forwardDelay:
+          type: integer
+          minimum: 4
+          maximum: 30
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 65535
+      example:
+        enable: false
+        helloTime: 3
+        maxAge: 21
+        forwardDelay: 5
+        priority: 32766
+    ServiceConfig:
+      type: object
+      required:
+        - https_enable
+        - web_access_enable
+        - telnet_enable
+        - ssh_enable
+        - bonjour_enable
+        - upnp_enable
+        - lldpdEnable
+        - timeout
+        - httpsForward
+      properties:
+        https_enable:
+          type: boolean
+        https_port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        web_access_enable:
+          type: boolean
+        http_port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        telnet_enable:
+          type: boolean
+        ssh_enable:
+          type: boolean
+        bonjour_enable:
+          type: boolean
+        upnp_enable:
+          type: boolean
+        lldpdEnable:
+          type: boolean
+        timeout:
+          type: integer
+        httpsForward:
+          type: boolean
+      anyOf: [
+        {
+          properties: {
+            https_enable: { enum: [true] }
+          },
+          required: [ https_port, web_access_enable, telnet_enable, ssh_enable, bonjour_enable, upnp_enable ]
+        },
+        {
+          properties: {
+            https_enable: { enum: [false] }
+          },
+          required: [ http_port, web_access_enable, telnet_enable, ssh_enable, bonjour_enable, upnp_enable ]
+        },
+      ]
+      example:
+        https_enable: true
+        https_port: 4430
+        web_access_enable: true
+        http_port: 80
+        telnet_enable: true
+        ssh_enable: true
+        bonjour_enable: true
+        upnp_enable: true
+        lldpdEnable: true
+        timeout: 600
+        httpsForward: true
+    PingCfg:
+      type: object
+      required:
+        - dest_ip
+        - size
+        - count
+      properties:
+        dest_ip:
+          type: string
+          description: support IP format or domain name
+        size:
+          type: integer
+          minimum: 64
+          maximum: 20480
+        count:
+          type: integer
+          minimum: 1
+          maximum: 9999
+      example:
+        dest_ip: 192.168.20.101
+        size: 1024
+        count: 4
+    PingResult:
+      type: object
+      properties:
+        result:
+          type: string
+      example:
+        result: >-
+          22375 && PING 10.0.97.254 (10.0.97.254): 56 data bytes && 64 bytes
+          from 10.0.97.254: icmp_seq=0 ttl=255 time=4.921 ms && 64 bytes from
+          10.0.97.254: icmp_seq=1 ttl=255 time=8.261 ms && --- 10.0.97.254 ping
+          statistics --- && 10 packets transmitted, 10 packets received, 0.0%
+          packet loss && round-trip min:avg:max = 4.151:4.988:8.261 ms
+    TraceRTCfg:
+      type: object
+      required:
+        - dest_ip
+      properties:
+        dest_ip:
+          type: string
+          description: support IP format or domain name
+      example:
+        dest_ip: www.google.com.tw
+    TracerouteResult:
+      type: object
+      properties:
+        result:
+          type: string
+      example:
+        result: >-
+          12344 && traceroute to google.com (74.125.236.132), 30 hops max, 60
+          byte packets && 1  220.224.141.129 (220.224.141.129)  89.174 ms
+          89.094 ms  89.054 ms && 2  115.255.239.65 (115.255.239.65)  109.037
+          ms  108.994 ms  108.963 ms && 3  124.124.251.245 (124.124.251.245)
+          108.937 ms  121.322 ms  121.300 ms && 4  * 115.255.239.45
+          (115.255.239.45)  113.754 ms  113.692 ms && 5  72.14.212.118
+          (72.14.212.118)  123.585 ms  123.558 ms  123.527 ms && 6
+          72.14.232.202 (72.14.232.202)  123.499 ms  123.475 ms  143.523 ms &&
+          7  216.239.48.179 (216.239.48.179)  143.503 ms  95.106 ms  95.026 ms
+          && 8  bom03s02-in-f4.1e100.net (74.125.236.132)  94.980 ms  104.989
+          ms  104.954 ms && Done.
+    SiteSurveyCfg:
+      type: object
+      required:
+        - radio
+      properties:
+        radio:
+          type: string
+          enum: [ 24g, 5g_1, 6g, all ]
+      example:
+        radio: all
+    SiteSurvey_ScanResult:
+      type: array
+      uniqueItems: true
+      items:
+        type: object
+        properties:
+          bssid:
+            $ref: '#/components/schemas/macFormat'
+          ssid:
+            type: string
+            minLength: 1
+            maxLength: 32
+          mode:
+            type: string
+            enum: [ AP ]
+          channel:
+            type: integer
+            minimum: 0
+            maximum: 196
+          signal:
+            type: integer
+          auth_type:
+            type: string
+            enum:
+              - OPEN
+              - WEP
+              - WPA-PSK
+              - WPA-PSK Mixed
+              - WPA Mixed
+              - WPA2-PSK
+              - WPA2
+              - WPA3-SAE
+              - WPA3-SAE Mixed
+              - WPA3
+              - OWE
+          wireless_mode:
+            type: string
+            enum:
+              - 11B  # b mode can't support 2.4G OFDM
+              - 11A
+              - 11G
+              - 11NG
+              - 11NA
+              - 11AC
+              - 11AXG
+              - 11AXA
+              - 11AX6G
+              - 11BEG
+              - 11BEA
+          ht_mode:
+            type: string
+            enum:
+              - HT20
+              - HT40
+              - HT80
+              - HT160  # for AN520 only
+              - HT320  # for WIFI 6G
+        example:
+          bssid: '00:0F:FF:3F:5C:20'
+          ssid: 'wireless_init'
+          mode: 'AP'
+          channel: 157
+          signal: -33
+          auth_type: 'WPA2-PSK'
+          wireless_mode: '11AC'
+          ht_mode: 'HT80'
+    SiteSurvey_Summary:
+      type: array
+      uniqueItems: true
+      items:
+        type: object
+        properties:
+          channel:
+            type: integer
+            minimum: 1
+            maximum: 196
+          ssid_count:
+            type: integer
+          utilization:
+            type: integer
+          max_rssi:
+            type: integer
+          isBest:
+            type: boolean
+    SiteSurveyData:
+      type: object
+      properties:
+        scanResult:
+          $ref: '#/components/schemas/SiteSurvey_ScanResult'
+        summary:
+          $ref: '#/components/schemas/SiteSurvey_Summary'
+    SiteSurveyResult:
+      type: object
+      properties:
+        24g:
+          $ref: '#/components/schemas/SiteSurveyData'
+        5g_1:
+          $ref: '#/components/schemas/SiteSurveyData'
+        6g:
+          $ref: '#/components/schemas/SiteSurveyData'
+      example:
+        24g:
+          scanResult:
+            - bssid: 00:0F:FF:3F:5C:20
+              ssid: 'wireless_init'
+              mode: 'AP'
+              channel: 6
+              signal: -33
+              auth_type: 'WPA2-PSK'
+              wireless_mode: '11NG'
+              ht_mode: 'HT20'
+          summary:
+            - channel: 1
+              ssid_count: 5
+              utilization: 30
+              max_rssi: -30
+              isBest: true
+        5g_1:
+          scanResult:
+            - bssid: 00:0F:FF:3F:5C:21
+              ssid: 'wireless_init'
+              mode: 'AP'
+              channel: 136
+              signal: -33
+              auth_type: 'WPA2-PSK'
+              wireless_mode: '11AC'
+              ht_mode: 'HT80'
+          summary:
+            - channel: 36
+              ssid_count: 5
+              utilization: 40
+              max_rssi: -30
+              isBest: true
+        6g:
+          scanResult:
+            - bssid: 00:0F:FF:3F:5C:23
+              ssid: 'araknis_initial'
+              mode: 'AP'
+              channel: 213
+              signal: -72
+              auth_type: 'OPEN'
+              wireless_mode: '11BEA'
+              ht_mode: 'EHT320'
+          summary:
+            - channel: 36
+              ssid_count: 5
+              utilization: 40
+              max_rssi: -30
+              isBest: true
+    autoRebootConfig:
+      type: object
+      required:
+        - enabled
+        - date
+        - time
+      properties:
+        enabled:
+          type: boolean
+        date:
+          type: array
+          uniqueItems: true
+          items:
+            type: object
+            required:
+              - enabled
+            properties:
+              enabled:
+                type: boolean
+          minItems: 7
+          maxItems: 7
+          example:
+            - enabled: true
+            - enabled: false
+            - enabled: false
+            - enabled: true
+            - enabled: false
+            - enabled: false
+            - enabled: false
+        time:
+          type: string
+    DeviceTimeConfig:
+      type: object
+      required:
+        - syncWithNTP
+        - ntpServer
+        - timezone
+        - manually_DateTime
+        - enableDST
+        - DSTStartDate
+        - DSTEndDate
+      properties:
+        devCurrentTime:
+          type: string
+        syncWithNTP:
+          type: boolean
+          description: If device sync system time with NTP server
+        ntpServer:
+          type: string
+          minLength: 11
+          maxLength: 20
+          enum:
+            - time.nist.gov
+            - time.windows.com
+            - time.google.com
+            - time.cloudflare.com
+            - time.apple.com
+            - time.euro.apple.com
+            - timelord1.uregina.ca
+            - ntp.metas.ch
+            - swisstime.ethz.ch
+            - ntp.shoa.cl
+            - ntp.cesnet.cz
+            - ntp2.fau.de
+        timezone:
+          type: string
+          minLength: 4
+          maxLength: 9
+          enum:
+            - UTC12      #(GMT-12-00) Eniwetok, Kwajalein
+            - UTC11      #(GMT-11-00) Midway Island, Samoa
+            - UTC10      #(GMT-10-00) Hawaii
+            - GMT10      #(GMT-10-00) Aleutian Islands
+            - NAST9      #(GMT-09-00) Alaska Time
+            - PST8       #(GMT-08-00) Pacific Time (US & Canada)
+            - UTC7       #(GMT-07-00) Mountain Time (US & Canada)
+            - MST7       #(GMT-07-00) Mountain Standard Time - No DST
+            - CST6       #(GMT-06-00) Central Time (US & Canada)
+            - EST5       #(GMT-05-00) Eastern Time (US & Canada)
+            - GMT4       #(GMT-04-00) Canada - Atlantic
+            - AST4       #(GMT-04-00) Atlantic Time - No DST
+            - NST3:30    #(GMT-03-30) Newfoundland
+            - BRST3      #(GMT-03-00) Brazil, Buenos Aires, Georgetown
+            - UTC2       #(GMT-02-00) Mid-Atlantic
+            - STD1       #(GMT-01-00) Azores, Cape Verde Islands
+            - GMT0       #(GMT+00-00) Western Europe Time, London, Lisbon
+            - STD-1      #(GMT+01-00) Brussels, Copenhagen, Madrid, Paris
+            - UTC-2      #(GMT+02-00) Athens, Istanbul, Kaliningrad, South Africa
+            - GMT-3      #(GMT+03-00) Moscow, St. Peter
+            - UTC-3      #(GMT+03-00) Baghdad, Riyadh
+            - GMT-3:30   #(GMT+03-30) Tehran
+            - UTC-4      #(GMT+04-00) Dubai, Muscat, Baku, Tbilisi
+            - GMT-4:30   #(GMT+04-30) Kabul
+            - UTC-5      #(GMT+05-00) Karachi, Ekaterinburg, Islamabad
+            - UTC-5:30   #(GMT+05-30) Bombay, Calcutta, Madras, New Delhi
+            - GMT-5:45   #(GMT+05-45) Kathmandu
+            - UTC-6      #(GMT+06-00) Almaty, Dhaka, Colombo
+            - UTC-7      #(GMT+07-00) Bangkok, Hanoi, Jakarta
+            - UTC-8      #(GMT+08-00) Beijing, Perth, Singapore, Hong Kong
+            - GMT-8:30   #(GMT+08-30) Australia - Northern Territory - No DST
+            - UTC-9      #(GMT+09-00) Tokyo, Seoul, Osaka, Sapporo, Yakutat
+            - CST-9:30   #(GMT+09-30) South Australia
+            - UTC-10     #(GMT+10-00) Eastern Australia, Guam, Vladivostok
+            - STD-10     #(GMT+10-00) Australia - Queensland - No DST
+            - GMT-10:30  #(GMT+10-30) South Australia - DST
+            - UTC-11     #(GMT+11-00) Magadan, Solomon Islands
+            - GMT-11     #(GMT+11-00) Eastern Australia, Guam, Vladivostok - DST
+            - UTC-12     #(GMT+12-00) Fiji, Auckland, Wellington, Kamchatka
+            - GMT-13     #(GMT+13-00) Fiji, Auckland, Wellington, Kamchatka - DST
+        name:
+          type: string
+          minLength: 10
+          maxLength: 22
+          enum:
+            - Pacific/Kwajalein       #(GMT-12-00) Eniwetok, Kwajalein
+            - Pacific/Samoa           #(GMT-11-00) Midway Island, Samoa
+            - Pacific/Honolulu        #(GMT-10-00) Hawaii
+            - America/Adak            #(GMT-10-00) Aleutian Islands
+            - America/Anchorage       #(GMT-09-00) Alaska Time
+            - America/Los_Angeles     #(GMT-08-00) Pacific Time (US & Canada)
+            - America/Denver          #(GMT-07-00) Mountain Time (US & Canada)
+            - America/Phoenix         #(GMT-07-00) Mountain Standard Time - No DST
+            - America/Chicago         #(GMT-06-00) Central Time (US & Canada)
+            - America/New_York        #(GMT-05-00) Eastern Time (US & Canada)
+            - America/Halifax         #(GMT-04-00) Canada - Atlantic
+            - America/Kralendijk      #(GMT-04-00) Atlantic Time - No DST
+            - America/St_Johns        #(GMT-03-30) Newfoundland
+            - America/Fortaleza       #(GMT-03-00) Brazil, Buenos Aires, Georgetown
+            - Atlantic/South_Georgia  #(GMT-02-00) Mid-Atlantic
+            - Atlantic/Azores         #(GMT-01-00) Azores, Cape Verde Islands
+            - Europe/London           #(GMT+00-00) Western Europe Time, London, Lisbon
+            - Europe/Brussels         #(GMT+01-00) Brussels, Copenhagen, Madrid, Paris
+            - Europe/Athens           #(GMT+02-00) Athens, Istanbul, Kaliningrad, South Africa
+            - Europe/Moscow           #(GMT+03-00) Moscow, St. Peter
+            - Asia/Baghdad            #(GMT+03-00) Baghdad, Riyadh
+            - Asia/Tehran             #(GMT+03-30) Tehran
+            - Asia/Dubai              #(GMT+04-00) Dubai, Muscat, Baku, Tbilisi
+            - Asia/Kabul              #(GMT+04-30) Kabul
+            - Asia/Karachi            #(GMT+05-00) Karachi, Ekaterinburg, Islamabad
+            - Asia/Kolkata            #(GMT+05-30) Bombay, Calcutta, Madras, New Delhi
+            - Asia/Kathmandu          #(GMT+05-45) Kathmandu
+            - Asia/Almaty             #(GMT+06-00) Almaty, Dhaka, Colombo
+            - Asia/Bangkok            #(GMT+07-00) Bangkok, Hanoi, Jakarta
+            - Australia/Perth         #(GMT+08-00) Beijing, Perth, Singapore, Hong Kong
+            - Australia/Darwin        #(GMT+08-30) Australia - Northern Territory - No DST
+            - Asia/Tokyo              #(GMT+09-00) Tokyo, Seoul, Osaka, Sapporo, Yakutat
+            - Australia/Adelaide      #(GMT+09-30) South Australia  /  (GMT+10-30) South Australia - DST
+            - Australia/Sydney        #(GMT+10-00) Eastern Australia, Guam, Vladivostok  /  (GMT+11-00) Eastern Australia, Guam, Vladivostok - DST
+            - Australia/Brisbane      #(GMT+10-00) Australia - Queensland - No DST
+            - Pacific/Bougainville    #(GMT+11-00) Magadan, Solomon Islands
+            - Pacific/Fiji            #(GMT+12-00) Fiji, Auckland, Wellington, Kamchatka  /  (GMT+13-00) Fiji, Auckland, Wellington, Kamchatka - DST
+        notes:
+          type: string
+          minLength: 5
+          maxLength: 43
+          enum:
+            - Eniwetok, Kwajalein
+            - Midway Island, Samoa
+            - Hawaii
+            - Aleutian Islands
+            - Alaska Time
+            - Pacific Time (US & Canada)
+            - Mountain Time (US & Canada)
+            - Mountain Standard Time - No DST
+            - Central Time (US & Canada)
+            - Eastern Time (US & Canada)
+            - Canada - Atlantic
+            - Atlantic Time - No DST
+            - Newfoundland
+            - Brazil, Buenos Aires, Georgetown
+            - Mid-Atlantic
+            - Azores, Cape Verde Islands
+            - Western Europe Time, London, Lisbon
+            - Brussels, Copenhagen, Madrid, Paris
+            - Athens, Istanbul, Kaliningrad, South Africa
+            - Moscow, St. Peter
+            - Baghdad, Riyadh
+            - Tehran
+            - Dubai, Muscat, Baku, Tbilisi
+            - Kabul
+            - Karachi, Ekaterinburg, Islamabad
+            - Bombay, Calcutta, Madras, New Delhi
+            - Kathmandu
+            - Almaty, Dhaka, Colombo
+            - Bangkok, Hanoi, Jakarta
+            - Beijing, Perth, Singapore, Hong Kong
+            - Australia - Northern Territory - No DST
+            - Tokyo, Seoul, Osaka, Sapporo, Yakutat
+            - South Australia
+            - Eastern Australia, Guam, Vladivostok
+            - Australia - Queensland - No DST
+            - South Australia - DST
+            - Magadan, Solomon Islands
+            - Eastern Australia, Guam, Vladivostok - DST
+            - Fiji, Auckland, Wellington, Kamchatka
+            - Fiji, Auckland, Wellington, Kamchatka - DST
+        manually_DateTime:
+          type: string
+          minLength: 16
+          maxLength: 16
+        enableDST:
+          type: boolean
+        DSTStartDate:
+          type: string
+        DSTEndDate:
+          type: string
+      example:
+        syncWithNTP: true
+        ntpServer: time.windows.com
+        timezone: EST5
+        manually_DateTime: 2018-03-19T17:04
+        enableDST: true
+        DSTStartDate: M4.1.0.2
+        DSTEndDate: M10.1.0.2
+    TraceRTOK:
+      type: object
+      properties:
+        dest_ip:
+          type: string
+          description: support IP format or domain name
+        session_id:
+          type: string
+        session_num:
+          type: integer
+        pid:
+          type: integer
+          minimum: 2
+          maximum: 32768  #default maximum, see /proc/sys/kernel/pid_max
+        deviceId:
+          $ref: '#/components/schemas/macFormat'
+        errCode:
+          $ref: '#/components/schemas/errCodeEnum'
+        message:
+          type: string
+      example:
+        dest_ip: www.google.com.tw
+        session_id: ead17895-5855-4ca9-8510-b04abf402092
+        session_num: 9
+        pid: 12344
+        deviceId: D4:6A:91:55:66:11
+        errCode: 0
+        message: OK
+    PingOK:
+      type: object
+      properties:
+        dest_ip:
+          type: string
+          description: support IP format or domain name
+        size:
+          type: integer
+          minimum: 64
+          maximum: 20480
+        count:
+          type: integer
+          minimum: 1
+          maximum: 9999
+        session_id:
+          type: string
+        session_num:
+          type: integer
+        pid:
+          type: integer
+          minimum: 2
+          maximum: 32768  #default maximum, see /proc/sys/kernel/pid_max
+        deviceId:
+          $ref: '#/components/schemas/macFormat'
+        errCode:
+          $ref: '#/components/schemas/errCodeEnum'
+        message:
+          type: string
+      example:
+        dest_ip: 192.168.20.101
+        size: 1024
+        count: 4
+        session_id: ead17895-5855-4ca9-8510-b04abf402092
+        session_num: 9
+        pid: 22375
+        deviceId: D4:6A:91:55:66:11
+        errCode: 0
+        message: OK
+    TrafficShaping:
+      type: object
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
+        download_limit:
+          description: Unit is 'Mbps'
+          type: integer
+          minimum: 1
+          maximum: 2402
+        upload_limit:
+          description: Unit is 'Mbps'
+          type: integer
+          minimum: 1
+          maximum: 2402
+      example:
+        enabled: true
+        download_limit: 450
+        upload_limit: 450
+      oneOf: [
+        {
+          properties: {
+            enabled: { enum: [true] }
+          },
+          required: [ download_limit, upload_limit ]
+        },
+        {
+          properties: {
+            enabled: { enum: [false] }
+          }
+        }
+      ]
+    MLO:
+      type: object
+      required:
+        - enabled
+      properties:
+        mloEnabled:
+          type: boolean
+        mldID:
+          description: Specify the mld ID
+          type: integer
+          minimum: 0
+          maximum: 8
+      example:
+        mloEnabled: true
+        mldID: 0
+    GWMonitorConfig:
+      type: object
+      required:
+        - enable
+        - gw_ip_address
+        - delay_between_timeout
+        - timeout_before_reboot
+        - ping_delay
+        - reboot_attempt
+      properties:
+        enable:
+          type: boolean
+        gw_ip_address:
+          $ref: '#/components/schemas/ipFormat'
+        delay_between_timeout:
+          type: integer
+          minimum: 10
+          maximum: 60
+        timeout_before_reboot:
+          type: integer
+          minimum: 3
+          maximum: 10
+        ping_delay:
+          type: integer
+          minimum: 5
+          maximum: 30
+        reboot_attempt:
+          type: integer
+          minimum: 0    # 0=Infinite reboot
+          maximum: 10
+      example:
+        enable: true
+        gw_ip_address: "192.168.1.254"
+        delay_between_timeout: 40
+        timeout_before_reboot: 3
+        ping_delay: 25
+        reboot_attempt: 7
+    ShowUserInfo:
+      type: object
+      required:
+        - name
+        - privilege
+      properties:
+        name:
+          type: string
+          minLength: 4
+          maxLength: 32
+        privilege:
+          type: string
+          enum: [ admin, user, guest ]
+    ShowUserArray:
+      type: array
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/ShowUserInfo'
+    UserInfo:
+      type: object
+      required:
+        - enable
+        - name
+        - privilege
+        - password
+      properties:
+        enable:
+          type: boolean
+        name:
+          type: string
+          minLength: 1
+          maxLength: 32
+        privilege:
+          type: string
+          enum: [ admin, user, guest ]
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+          maxLength: 64
+    UserArray:
+      type: array
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/UserInfo'
+      example:
+        - enable: true
+          name: araknis
+          privilege: admin
+          password: "!@#$%^&*(i)_+ 9.-?431243124312431243124312431243124312431243124Z"
+        - enable: false
+          name: iamuser
+          privilege: user
+          password: "Emplus602!"
+        - enable: true
+          name: iamguest
+          privilege: guest
+          password: "Emplus503!"
+        - enable: true
+          name: test
+          privilege: guest
+          password: "Emplus305!"
+    DeviceInfo:
+      type: object
+      properties:
+        serial_no:
+          type: string
+          minLength: 18
+          maxLength: 18
+        base_mac_address:
+          $ref: '#/components/schemas/macFormat'
+        fw_ver:
+          type: string
+          minLength: 7
+          maxLength: 16
+        fw_build_date:
+          type: string
+          minLength: 10
+          maxLength: 10
+        country_code:   # FCC only display 840
+          readOnly: true
+          type: integer
+          enum:
+            - 8     # Albania
+            - 36    # Australia
+            - 40    # Austria
+            - 56    # Belgium
+            - 100   # Bulgaria
+            - 124   # Canada
+            - 191   # Croatia
+            - 196   # Cyprus
+            - 203   # Czech Republic
+            - 208   # Denmark
+            - 233   # Estonia
+            - 246   # Finland
+            - 250   # France
+            - 276   # Germany
+            - 300   # Greece
+            - 348   # Hungary
+            - 352   # Iceland
+            - 372   # Ireland
+            - 376   # Israel
+            - 380   # Italy
+            - 428   # Latvia
+            - 438   # Liechtenstein
+            - 440   # Lithuania
+            - 442   # Luxembourg
+            - 470   # Malta
+            - 499   # Montenegro
+            - 528   # Netherlands
+            - 530   # Netherlands Antilles
+            - 554   # New Zealand
+            - 578   # Norway
+            - 616   # Poland
+            - 620   # Portugal
+            - 642   # Romania
+            - 643   # Russia
+            - 688   # Serbia
+            - 703   # Slovakia
+            - 705   # Slovenia
+            - 724   # Spain
+            - 752   # Sweden
+            - 756   # Switzerland
+            - 792   # Turkey
+            - 807   # The Former Yugoslav Republic of Macedonia
+            - 826   # United Kingdom
+            - 840   # United States
+        model_name:
+          description: |
+            Display the model name of FCC (XXX) or INT (XXX-1)
+          type: string
+        activePartition:
+          type: string
+          enum:
+            - '0'  #string
+            - '1'  #string
+            - 'NA' # Not Available
+      example:
+        serial_no: "ST163218640VS841A1"
+        base_mac_address: "D4:6A:91:3F:5C:19"
+        fw_ver: "V2.1.10"
+        fw_build_date: "2021-12-03"
+        country_code: 840
+        model_name: "AN-820-AP-I"
+        activePartition: "1"
+    System:
+      type: object
+      properties:
+        DeviceID:
+          type: string
+          minLength: 17
+          maxLength: 17
+        STNumber:
+          type: string
+          minLength: 18
+          maxLength: 18
+        FWVersion:
+          type: string
+          minLength: 10
+          maxLength: 11
+        CPU:
+          type: string
+          minLength: 2
+          maxLength: 4
+        UTC:
+          type: string
+        Uptime:
+          type: string
+        memAvailable:
+          type: string
+        memUsed:
+          type: string
+        tempCPU:
+          type: string
+          minLength: 4
+          maxLength: 5
+        temp2G:
+          type: string
+          minLength: 4
+          maxLength: 5
+        temp5G:
+          type: string
+          minLength: 4
+          maxLength: 5
+        temp6G:
+          type: string
+          minLength: 4
+          maxLength: 5
+        powerState:
+          description: |
+            enum list explain:
+              * DC: Direct Current
+              * BT: IEEE 802.3bt
+              * AT: IEEE 802.3at
+              * AF: IEEE 802.3af
+              * NA: Not Available
+          type: string
+          enum:
+            - DC
+            - BT
+            - AT
+            - AF
+            - NA
+        activePartition:
+          type: string
+          enum:
+            - '0'  #string
+            - '1'  #string
+            - 'NA' # Not Available
+        watchdogTrigFlag:
+          description: If Watchdog trigger Wi-Fi Module to reload, set flag to true.
+          type: boolean
+      example:
+        DeviceID: 'D4:6A:91:12:34:56'
+        STNumber: 'ST3456789012345678'
+        FWVersion: 'V1.0.00.05'
+        CPU: '5%'
+        UTC: '2021-12-09T01:30:11Z'
+        Uptime: '56 min'
+        memAvailable: '12345678 KB'
+        memUsed: '2345678 KB'
+        tempCPU: '92°C'
+        temp2G: '102°C'
+        temp5G: '99°C'
+        temp6G: '97°C'
+        powerState: 'DC'
+        activePartition: '1'
+        watchdogTrigFlag: false
+    Lan:
+      type: object
+      properties:
+        interface:
+          type: string
+          enum:
+            - LAN1
+            - LAN2
+            - LAN3
+        ifStatus:
+          type: string
+          enum:
+            - Connected
+            - Not Connected
+        ifSpeed:
+          type: string
+          enum:
+            - --
+            - 10Mbps
+            - 100Mbps
+            - 1Gbps
+            - 2.5Gbps
+            - 5Gbps
+            - 10Gbps
+        ifDuplex:
+          type: string
+          enum:
+            - --
+            - HALF
+            - FULL
+        TX:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        RX:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+      example:
+        - interface: 'LAN1'
+          ifStatus: 'Connected'
+          ifSpeed: '2.5Gbps'
+          ifduplex: 'FULL'
+          TX: 123456789
+          RX: 123456789
+        - interface: 'LAN2'
+          ifStatus: 'Not Connected'
+          ifSpeed: '--'
+          ifduplex: '--'
+          TX: 0
+          RX: 0
+    Radio:
+      type: object
+      properties:
+        interface:
+          type: string
+          enum: [ 2.4GHz, 5GHz, 6GHz ]
+        stateOfRadio:
+          type: boolean
+        TX:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        RX:
+          description: Unit is 'bytes'
+          type: integer
+          minimum: 0
+          maximum: 4294967040
+        networkCount:
+          type: integer
+          minimum: 1
+          maximum: 8
+        sumOfClients:
+          type: integer
+        opMode:
+          type: string
+          enum: [ AP ]
+        opRole:
+          type: string
+          enum: [ --, CONTROLLER, NODE ]
+        userSelectedChannel:
+          type: string
+          minLength: 1
+          maxLength: 4
+        channelBandWidth:
+          type: string
+          enum:
+            - HT20
+            - HT20_40
+            - HT40
+            - HT80
+            - HT160  # for AN520 only
+            - HT320  # for support wifi 6G model. e.g AN530I
+        channelutilization:
+          type: string
+          minLength: 2
+          maxLength: 4
+        channelCurrentlyUsed:
+          type: integer
+          minimum: 1
+          maximum: 196
+        stateOfGuestNetwork:
+          type: boolean
+      example:
+        - interface: '2.4GHz'
+          stateOfRadio: true
+          TX: 12345678
+          RX: 12345678
+          networkCount: 1
+          sumOfClients: 2
+          opMode: 'AP'
+          opRole: '--'
+          userSelectedChannel: 'AUTO'
+          channelBandWidth: 'HT20'
+          channelutilization: '100%'
+          channelCurrentlyUsed: 6
+          stateOfGuestNetwork: true
+        - interface: '5GHz'
+          stateOfRadio: true
+          TX: 12345678
+          RX: 12345678
+          networkCount: 2
+          sumOfClients: 3
+          opMode: 'AP'
+          opRole: '--'
+          userSelectedChannel: 'AUTO'
+          channelBandWidth: 'HT80'
+          channelutilization: '23%'
+          channelCurrentlyUsed: 149
+          stateOfGuestNetwork: false
+        - interface: '6GHz'
+          stateOfRadio: true
+          TX: 12345678
+          RX: 12345678
+          networkCount: 1
+          sumOfClients: 0
+          opMode: 'AP'
+          opRole: '--'
+          userSelectedChannel: 'AUTO'
+          channelBandWidth: 'HT320'
+          channelutilization: '1%'
+          channelCurrentlyUsed: 37
+          stateOfGuestNetwork: false
+    dfs:
+      type: object
+      properties:
+        dfs:
+          type: boolean
+        count:
+          type: integer
+          minimum: 0
+        date:
+          type: string
+          minLength: 2  # --
+          maxLength: 8
+        time:
+          type: string
+          minLength: 2  # --
+          maxLength: 8
+      example:
+        dfs: true
+        count: 3
+        date: '12/01/21'
+        time: '09:59:47'
+    counter:
+      description: |
+        For debug purpose, station can not connect to 2G radio with WPA2/3 - personal after serval days.
+      type: object
+      properties:
+        txDescInUse2g:
+          type: integer
+          minimum: 0
+        rxDescInUse2g:
+          type: integer
+          minimum: 0
+        rxDescInUse5g:
+          type: integer
+          minimum: 0
+      example:
+        txDescInUse2g: 168
+        rxDescInUse2g: 4095
+        rxDescInUse5g: 4095
+    wifiBridge:
+      type: object
+      properties:
+        enable:
+          type: boolean
+        role:
+          type: string
+          description: This key show wireless bridge actual connection status
+          enum:
+            - Wired Bridge
+            - Wireless Bridge
+            - '--'
+      example:
+        enable: true
+        role: 'Wireless Bridge'
+    wifiBridgeConfig:
+      type: object
+      properties:
+        enable:
+          type: boolean
+        radio:
+          type: string
+          enum: [ "2.4GHZ", "5GHZ" ]
+        role:
+          type: string
+          enum:
+            - Wired Bridge      # mapping AP config
+            - Wireless Bridge   # mapping STA config (default)
+        security:
+          type: string # WPA3-SAE only for now
+        ssid:
+          type: string
+        localBssid:
+          $ref: '#/components/schemas/macFormat'
+        remoteBssid:
+          $ref: '#/components/schemas/macFormat'
+        key:
+          type: string
+          minLength: 8
+          maxLength: 64
+      example:
+        enable: true
+        radio: '5GHZ'
+        role: 'Wired Bridge'
+        security: 'WPA3-SAE'
+        ssid: 'wlanBridge5G'
+        localBssid: '00:AA:BB:CC:DD:EE'
+        remoteBssid: '00:11:22:33:44:55'
+        key: '12345678'
+    wifiBridgeStatus:
+      type: object
+      properties:
+        role:
+          type: string
+          description: This key show wireless bridge actual connection status, the same as /sys/status-update -> wifiBridge -> uplinkType
+          enum:
+            - Wired Bridge
+            - Wireless Bridge
+            - '--'
+        uptime:
+          type: string
+        connection:
+          type: string
+          enum: [Online, Offline]
+      example:
+        role: 'Wired Bridge'
+        uptime: '0 d 20 h 45 m 54 s'
+        connection: 'Online'
