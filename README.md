@@ -37,18 +37,21 @@ pip install .[dev]
 ## Quick Start
 
 ```bash
-# After installing, just run any command — first run auto-prompts for credentials and AP IPs
+# 1. Run setup to configure your credentials and AP IPs
+wfm setup
+
+# 2. Check the status of all configured APs
 wfm status
 ```
 
-On first run you'll be prompted for:
-1. AP admin username
-2. AP admin password
-3. AP IP addresses (comma-separated)
+`wfm setup` will prompt you for:
+1. **AP admin username**
+2. **AP admin password**
+3. **AP IP addresses** (comma-separated)
 
 Credentials are encrypted with Fernet (via `cryptography`) and saved to `.env`. The encryption key is stored in `.env.key`. Both files are gitignored. All subsequent commands will use them automatically.
 
-You can also copy `.env.template` to `.env` and fill in values manually before running.
+You can also copy `.env.template` to `.env` and fill in values manually before running. If you skip setup, any command will auto-prompt for credentials on first run.
 
 ## Usage
 
