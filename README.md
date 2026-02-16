@@ -34,18 +34,6 @@ pip install .
 pip install .[dev]
 ```
 
-## First-Run Setup
-
-On first run, the CLI will prompt you interactively for:
-
-1. **AP admin username**
-2. **AP admin password**
-3. **AP IP addresses** (comma-separated)
-
-Credentials are encrypted with Fernet (via `cryptography`) and stored in `.env`. The encryption key is stored in `.env.key`. Both files are gitignored.
-
-You can also copy `.env.template` to `.env` and fill in values manually before running.
-
 ## Quick Start
 
 ```bash
@@ -58,7 +46,9 @@ On first run you'll be prompted for:
 2. AP admin password
 3. AP IP addresses (comma-separated)
 
-Once entered, credentials are encrypted and saved. All subsequent commands will use them automatically.
+Credentials are encrypted with Fernet (via `cryptography`) and saved to `.env`. The encryption key is stored in `.env.key`. Both files are gitignored. All subsequent commands will use them automatically.
+
+You can also copy `.env.template` to `.env` and fill in values manually before running.
 
 ## Usage
 
