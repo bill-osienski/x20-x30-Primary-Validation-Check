@@ -46,6 +46,20 @@ Credentials are encrypted with Fernet (via `cryptography`) and stored in `.env`.
 
 You can also copy `.env.template` to `.env` and fill in values manually before running.
 
+## Quick Start
+
+```bash
+# After installing, just run any command — first run auto-prompts for credentials and AP IPs
+wfm status
+```
+
+On first run you'll be prompted for:
+1. AP admin username
+2. AP admin password
+3. AP IP addresses (comma-separated)
+
+Once entered, credentials are encrypted and saved. All subsequent commands will use them automatically.
+
 ## Usage
 
 ```bash
@@ -58,7 +72,7 @@ wfm recheck
 # Re-run the check on a single AP
 wfm recheck 192.168.1.100
 
-# Re-run credential and IP setup
+# Re-run credential and IP setup (to change credentials or AP list)
 wfm setup
 ```
 
